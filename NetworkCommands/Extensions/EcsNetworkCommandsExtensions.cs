@@ -3,6 +3,7 @@
     using System.Runtime.CompilerServices;
     using Data;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using Systems;
 
 #if ENABLE_IL2CPP
@@ -43,7 +44,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TComponent AddNetworkMessage<TComponent>(this EcsWorld world, NetworkMessageTarget target) 
+        public static ref TComponent AddNetworkMessage<TComponent>(this ProtoWorld world, NetworkMessageTarget target) 
             where TComponent : struct
         {
             return ref messageTools.AddNetworkMessage<TComponent>(target);
@@ -55,7 +56,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TComponent AddNetworkMessage<TComponent>(this EcsWorld world)
+        public static ref TComponent AddNetworkMessage<TComponent>(this ProtoWorld world)
             where TComponent : struct
         {
             return ref messageTools.AddNetworkMessage<TComponent>();
@@ -67,7 +68,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TComponent AddNetworkComponent<TComponent>(this EcsWorld world,int entity)
+        public static ref TComponent AddNetworkComponent<TComponent>(this ProtoWorld world,ProtoEntity entity)
             where TComponent : struct
         {
             return ref messageTools.AddNetworkComponent<TComponent>(entity);
@@ -79,7 +80,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TComponent AddNetworkComponent<TComponent>(this EcsWorld world,int entity, NetworkMessageTarget target)
+        public static ref TComponent AddNetworkComponent<TComponent>(this ProtoWorld world,ProtoEntity entity, NetworkMessageTarget target)
             where TComponent : struct
         {
             return ref messageTools.AddNetworkComponent<TComponent>(entity,target);
@@ -91,7 +92,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TComponent AddNetworkComponent<TComponent>(this EcsPool<TComponent> pool,int entity)
+        public static ref TComponent AddNetworkComponent<TComponent>(this EcsPool<TComponent> pool,ProtoEntity entity)
             where TComponent : struct
         {
             return ref messageTools.AddNetworkComponent<TComponent>(entity);
@@ -103,7 +104,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref TComponent AddNetworkComponent<TComponent>(this EcsPool<TComponent> pool,int entity, NetworkMessageTarget target)
+        public static ref TComponent AddNetworkComponent<TComponent>(this EcsPool<TComponent> pool,ProtoEntity entity, NetworkMessageTarget target)
             where TComponent : struct
         {
             return ref messageTools.AddNetworkComponent<TComponent>(entity,target);

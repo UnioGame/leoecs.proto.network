@@ -3,10 +3,14 @@
     using System;
     using System.Buffers;
     using System.Runtime.CompilerServices;
-    using MemoryPack;
     using Unity.Burst;
     using Unity.Collections;
     using Unity.Collections.LowLevel.Unsafe;
+    using UnityEngine;
+
+#if ENABLE_MEMORY_PACK    
+    using MemoryPack;
+#endif
 
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -17,6 +21,8 @@
 #endif
     public static class EcsNetworkSerializer
     {
+        public const string EnableMemoryPackMessage= "MemoryPack is not enabled with ENABLE_MEMORY_PACK define not Blittable serialization detected!";
+        
         [ThreadStatic]
         private static ArrayBufferWriter<byte> _arrayBufferWriter;
         
@@ -29,11 +35,15 @@
                 var isBlittable = UnsafeUtility.IsBlittable<TValue>();
                 if (!isBlittable)
                 {
+#if ENABLE_MEMORY_PACK  
                     _arrayBufferWriter ??= new ArrayBufferWriter<byte>();
                     _arrayBufferWriter.Clear();
                     MemoryPackSerializer.Serialize(_arrayBufferWriter, value, MemoryPackSerializerOptions.Utf16);
                     var span = _arrayBufferWriter.WrittenSpan;
                     return writer.WriteData(ref span);
+#endif
+                    Debug.LogWarning(EnableMemoryPackMessage);
+                    return default;
                 }
                 
                 var length = UnsafeUtility.SizeOf<TValue>();
@@ -52,6 +62,7 @@
                 var isBlittable = UnsafeUtility.IsBlittable<TValue>();
                 if (isBlittable) return writer.WriteData(ref value,offset);
                 
+#if ENABLE_MEMORY_PACK   
                 _arrayBufferWriter ??= new ArrayBufferWriter<byte>(512);
                 _arrayBufferWriter.Clear();
                 
@@ -59,6 +70,9 @@
                 
                 var span = _arrayBufferWriter.WrittenSpan;
                 return writer.WriteData(ref span, offset);
+#endif
+                Debug.LogWarning(EnableMemoryPackMessage);
+                return default;
             }
         }
                 
@@ -66,21 +80,29 @@
         public static int Serialize<TValue>(this ArrayBufferWriter<byte> writer,ref TValue value)
             where TValue : struct
         {
+#if ENABLE_MEMORY_PACK   
             unsafe
             {
                 var start = writer.WrittenCount;
                 MemoryPackSerializer.Serialize(writer, value, MemoryPackSerializerOptions.Utf16);
                 return writer.WrittenCount - start;
             }
+#endif
+            Debug.LogWarning(EnableMemoryPackMessage);
+            return default;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static object? Deserialize(this ref NativeArray<byte> buffer,int offset,Type type)
         {
+#if ENABLE_MEMORY_PACK  
             var span = buffer.AsReadOnlySpan();
             //if (UnsafeUtility.IsBlittable(type)) return span.ReadData(type);
             var slice = span.Slice(offset, span.Length - offset);
             return MemoryPackSerializer.Deserialize(type,slice, MemoryPackSerializerOptions.Utf16);
+#endif
+            Debug.LogWarning(EnableMemoryPackMessage);
+            return default;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -101,8 +123,12 @@
                 var isBlittable = UnsafeUtility.IsBlittable<TValue>();
                 if (isBlittable) return buffer.ReadData(ref value);
                 
+#if ENABLE_MEMORY_PACK  
                 var readCount = MemoryPackSerializer.Deserialize(buffer, ref value);
                 return readCount;
+#endif
+                Debug.LogWarning(EnableMemoryPackMessage);
+                return default;
             }
         }
         
@@ -116,9 +142,13 @@
                 var isBlittable = UnsafeUtility.IsBlittable<TValue>();
                 if (isBlittable) return buffer.ReadData(ref value);
                 
+#if ENABLE_MEMORY_PACK  
                 var readCount = MemoryPackSerializer
                     .Deserialize(buffer.ToArray(), ref value);
                 return readCount;
+#endif
+                Debug.LogWarning(EnableMemoryPackMessage);
+                return default;
             }
         }
         

@@ -5,12 +5,9 @@ namespace Game.Ecs.Network.Shared.Data
     using System;
     using System.Buffers;
     using System.Runtime.CompilerServices;
-    using Leopotam.EcsLite;
-    using MemoryPack;
     using Unity.Collections;
-    using Game.Ecs.Network.Shared.Data;
-    using Unity.Collections.LowLevel.Unsafe;
     using Game.Ecs.Network.Network.Serializer;
+    using Leopotam.EcsProto;
     using UniGame.LeoEcs.Shared.Extensions;
 
 #if ENABLE_IL2CPP
@@ -29,22 +26,30 @@ namespace Game.Ecs.Network.Shared.Data
     [Serializable]
     public class TemplateEcsTypeSerializer : IEcsTypeSerializer
     {
-
+        public static readonly Type TemplateType = typeof(TemplateSerializeType);
+        
+#if ENABLE_MEMORY_PACK    
+    using MemoryPack;
+#endif
+        
 #if ENABLE_IL2CPP
         [Il2CppSetOption(Option.NullChecks, false)]
         [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Serialize(EcsWorld world, int entity,IBufferWriter<byte> writer)
+        public bool Serialize(ProtoWorld world, ProtoEntity entity,IBufferWriter<byte> writer)
         {
-            var pool = world.GetPool<TemplateSerializeType>();
+#if ENABLE_MEMORY_PACK  
+            var pool = world.Pool(TemplateType) as ProtoPool<TemplateSerializeType>;
             if (!pool.Has(entity)) return false;
             ref var component = ref pool.Get(entity);
             //var size = Unsafe.SizeOf<TemplateSerializeType>();
             MemoryPackSerializer.Serialize(writer, component, MemoryPackSerializerOptions.Utf16);
             
             return true;
+#endif
+            return false;
         }
         
 #if ENABLE_IL2CPP
@@ -53,9 +58,9 @@ namespace Game.Ecs.Network.Shared.Data
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Serialize(EcsWorld world, int entity,ref NativeArray<byte> buffer,int offset)
+        public int Serialize(ProtoWorld world, ProtoEntity entity,ref NativeArray<byte> buffer,int offset)
         {
-            var pool = world.GetPool<TemplateSerializeType>();
+            var pool = world.Pool(TemplateType) as ProtoPool<TemplateSerializeType>;
             if (!pool.Has(entity)) return -1;
             
             ref var component = ref pool.Get(entity);
@@ -71,7 +76,7 @@ namespace Game.Ecs.Network.Shared.Data
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Deserialize(EcsWorld world, int entity,ref ReadOnlySpan<byte> buffer)
+        public int Deserialize(ProtoWorld world, ProtoEntity entity,ref ReadOnlySpan<byte> buffer)
         {
             ref var component = ref world.GetOrAddComponent<TemplateSerializeType>(entity);
             // Get a writer for the stream
@@ -86,7 +91,7 @@ namespace Game.Ecs.Network.Shared.Data
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Deserialize(EcsWorld world, int entity,ref NativeSlice<byte> buffer)
+        public int Deserialize(ProtoWorld world, ProtoEntity entity,ref NativeSlice<byte> buffer)
         {
             ref var component = ref world.GetOrAddComponent<TemplateSerializeType>(entity);
             // Get a writer for the stream
@@ -101,7 +106,7 @@ namespace Game.Ecs.Network.Shared.Data
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int Deserialize(EcsWorld world, int entity,ref NativeArray<byte> buffer,int offset)
+        public int Deserialize(ProtoWorld world, ProtoEntity entity,ref NativeArray<byte> buffer,int offset)
         {
             // Get a writer for the stream
             // Write some data into the stream

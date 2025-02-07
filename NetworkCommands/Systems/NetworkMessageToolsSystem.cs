@@ -6,6 +6,8 @@
     using Data;
     using Extensions;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using Shared.Aspects;
     using Shared.Components;
     using Shared.Data;
@@ -36,7 +38,7 @@
         public NetworkMessageAspect messageAspect;
         public NetworkAspect networkAspect;
         
-        public EcsWorld world;
+        public ProtoWorld world;
         public EcsNetworkSettings networkSettings;
         public EcsNetworkData networkData;
         public NetworkHistoryData[] historyData;
@@ -47,9 +49,11 @@
         public int _maxNetworkEntities;
         public int _entityChunkSize;
         
-        private EcsFilter _connectionFilter;
+        private ProtoIt _connectionFilter = It
+            .Chain<NetworkConnectionTypeComponent>()
+            .End();
 
-        public void Init(IEcsSystems systems)
+        public void Init(IProtoSystems systems)
         {
             world = systems.GetWorld();
             networkSettings = world.GetGlobal<EcsNetworkSettings>();
@@ -88,18 +92,14 @@
 
             isServer = false;
             isClient = false;
-            
-            _connectionFilter = world
-                .Filter<NetworkConnectionTypeComponent>()
-                .End();
         }
         
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             var entity = _connectionFilter.First();
-            if(entity < 0) return;
+            if(entity.Ok) return;
             
-            ref var connection = ref networkAspect.ConnectionType.Get(entity);
+            ref var connection = ref networkAspect.ConnectionType.Get(entity.Entity);
             isClient = connection.IsClient;
             isServer = connection.IsServer;
         }
@@ -110,13 +110,13 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref TComponent AddNetworkRequest<TComponent>(int entity, NetworkMessageTarget target)
+        public ref TComponent AddNetworkRequest<TComponent>(ProtoEntity entity, NetworkMessageTarget target)
             where TComponent : struct
         {
             return ref world.AddNetworkComponent<TComponent>(entity, target);
         }
 
-        public void Destroy(IEcsSystems systems)
+        public void Destroy()
         {
             foreach (var value in historyData)
             {
@@ -160,7 +160,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref TComponent AddNetworkComponent<TComponent>(int entity,bool markAsEvent = false)
+        public ref TComponent AddNetworkComponent<TComponent>(ProtoEntity entity,bool markAsEvent = false)
             where TComponent : struct
         {
             var target = isServer ? NetworkMessageTarget.NotServer : NetworkMessageTarget.Server;
@@ -173,7 +173,7 @@
         [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref TComponent AddNetworkComponent<TComponent>(int entity, NetworkMessageTarget target,
+        public ref TComponent AddNetworkComponent<TComponent>(ProtoEntity entity, NetworkMessageTarget target,
             bool markAsEvent = false, ulong targetId = default) where TComponent : struct
         {
 #if UNITY_EDITOR || GAME_DEBUG

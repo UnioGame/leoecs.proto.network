@@ -1,29 +1,17 @@
-﻿using System;
-using Game.Ecs.Network.NetworkCommands.Aspects;
-using Game.Ecs.Network.NetworkCommands.Components.Events;
-using Game.Ecs.Network.Shared.Profiler;
-using Leopotam.EcsLite;
-using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-
-namespace Game.Ecs.Network.Profiler.Systems
+﻿namespace Game.Ecs.Network.Profiler.Systems
 {
     using System;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components.Events;
-    using Shared.Profiler;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-
+    using UniGame.LeoEcs.Shared.Extensions;
+    
     /// <summary>
     /// update profiler counter
     /// </summary>
 #if ENABLE_IL2CPP
-    using System;
-    using Leopotam.EcsLite;
-    using NetworkCommands.Aspects;
-    using NetworkCommands.Components.Events;
-    using Shared.Profiler;
-    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using Unity.IL2CPP.CompilerServices;
 
     [Il2CppSetOption(Option.NullChecks, false)]
@@ -34,12 +22,12 @@ namespace Game.Ecs.Network.Profiler.Systems
     [ECSDI]
     public class UpdateEcsNetworkTrafficCounterSystem : IEcsInitSystem, IEcsRunSystem
     {
-        private EcsWorld _world;
+        private ProtoWorld _world;
         private EcsFilter _sendFilter;
 
         private NetworkMessageAspect _messageAspect;
 
-        public void Init(IEcsSystems systems)
+        public void Init(IProtoSystems systems)
         {
             _world = systems.GetWorld();
 
@@ -48,7 +36,7 @@ namespace Game.Ecs.Network.Profiler.Systems
                 .End();
         }
 
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var entity in _sendFilter)
             {

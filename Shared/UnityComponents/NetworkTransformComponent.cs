@@ -1,9 +1,14 @@
 ﻿namespace Game.Ecs.Network.Shared.UnityComponents
 {
     using System;
-    using MemoryPack;
+    
     using NetworkCommands.Data;
     using Unity.Mathematics;
+    
+#if ENABLE_MEMORY_PACK
+    using MemoryPack;
+#endif
+
     /// <summary>
     /// position of object
     /// </summary>
@@ -14,8 +19,10 @@
     [Il2CppSetOption(Option.ArrayBoundsChecks, false)]
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
-    [Serializable]
+#if ENABLE_MEMORY_PACK
     [MemoryPackable]
+#endif
+    [Serializable]
     public partial struct NetworkTransformComponent : IEcsNetworkValue
     {
         public float3 Position;  

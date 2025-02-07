@@ -2,6 +2,7 @@
 {
     using System;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto.QoL;
 
     /// <summary>
     /// link to network object
@@ -16,6 +17,6 @@
     [Serializable]
     public struct NetworkLinkComponent
     {
-        public EcsPackedEntity Value;
+        public ProtoPackedEntity Value;
     }
 }

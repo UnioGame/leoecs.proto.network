@@ -2,13 +2,13 @@
 {
     using System;
     using Cysharp.Threading.Tasks;
-    using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using UniGame.LeoEcs.Bootstrap.Runtime;
 
     [Serializable]
-    public class NetworkClientFeature : LeoEcsFeature
+    public class NetworkClientFeature : EcsFeature
     {
-        protected sealed override UniTask OnInitializeFeatureAsync(IEcsSystems ecsSystems)
+        protected sealed override UniTask OnInitializeAsync(IProtoSystems ecsSystems)
         {
             return UniTask.CompletedTask;
         }

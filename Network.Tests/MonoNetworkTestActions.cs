@@ -5,7 +5,6 @@ namespace Game.Ecs.Network.Network.Tests
     using System;
     using System.Buffers;
     using System.Runtime.CompilerServices;
-    using MemoryPack;
     using NetworkCommands.Data;
     using Serializer;
     using Shared.Data;
@@ -14,6 +13,10 @@ namespace Game.Ecs.Network.Network.Tests
     using Unity.Collections.LowLevel.Unsafe;
     using UnityEngine.Profiling;
     using UnityNetcode.NetcodeMessages.Systems;
+    
+#if ENABLE_MEMORY_PACK
+    using MemoryPack;
+#endif
 
     public class MonoNetworkTestActions : MonoBehaviour
     {
@@ -93,6 +96,7 @@ namespace Game.Ecs.Network.Network.Tests
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int SerializeManaged(IBufferWriter<byte> writer)
         {
+#if ENABLE_MEMORY_PACK
             var value = new TemplateSerializeType()
             {
                 Value = 1111,
@@ -102,6 +106,9 @@ namespace Game.Ecs.Network.Network.Tests
             //var size = Unsafe.SizeOf<TemplateSerializeType>();
             MemoryPackSerializer.Serialize(writer, value, MemoryPackSerializerOptions.Utf16);
             return writer.GetSpan().Length - start;
+#endif
+            Debug.LogWarning("MemoryPack is not enabled with ENABLE_MEMORY_PACK define not Blittable serialization detected!");
+            return 0;
         }
         
         [Button]

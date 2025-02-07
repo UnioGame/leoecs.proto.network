@@ -1,7 +1,7 @@
 ﻿namespace Game.Ecs.Network.NetworkCommands.Components
 {
     using System;
-    using Leopotam.EcsLite;
+    using Leopotam.EcsProto.QoL;
     using Unity.Collections;
 
     /// <summary>
@@ -17,6 +17,6 @@
     [Serializable]
     public struct NetworkSyncValuesComponent
     {
-        public NativeHashMap<int,EcsPackedEntity> Values;
+        public NativeHashMap<int,ProtoPackedEntity> Values;
     }
 }

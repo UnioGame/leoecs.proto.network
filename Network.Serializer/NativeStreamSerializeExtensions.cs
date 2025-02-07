@@ -2,19 +2,24 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using Game.Ecs.Network.UnityNetcode.NetcodeMessages.Systems;
-using MemoryPack;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 
+#if ENABLE_MEMORY_PACK
+    using MemoryPack;
+#endif
+    
 namespace Game.Ecs.Network.Network.Serializer
 {
+    
     using System;
     using System.Buffers;
     using System.Runtime.CompilerServices;
-    using MemoryPack;
+
     using Unity.Collections;
     using Unity.Collections.LowLevel.Unsafe;
     using UnityNetcode.NetcodeMessages.Systems;
+    
 #if ENABLE_IL2CPP
     using System;
     using System.Buffers;
@@ -80,7 +85,7 @@ namespace Game.Ecs.Network.Network.Serializer
         {
             return ByteHashCalculator.ComputeHash(ref data,length);
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Serialize<TValue>(this ref NativeStream.Writer writer,ref TValue value)
             where TValue : struct
@@ -88,6 +93,8 @@ namespace Game.Ecs.Network.Network.Serializer
             unsafe
             {
                 var isBlittable = UnsafeUtility.IsBlittable<TValue>();
+                        
+#if ENABLE_MEMORY_PACK
                 if (!isBlittable)
                 {
                     _arrayBufferWriter ??= new ArrayBufferWriter<byte>();
@@ -96,6 +103,7 @@ namespace Game.Ecs.Network.Network.Serializer
                     var span = _arrayBufferWriter.WrittenSpan;
                     return writer.WriteData(ref span);
                 }
+#endif
                 
                 var length = UnsafeUtility.SizeOf<TValue>();
                 var bytePtr = writer.Allocate(length);

@@ -4,16 +4,16 @@
     using Cysharp.Threading.Tasks;
     using Data;
     using Extensions;
-    using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using Systems;
     using UniGame.LeoEcs.Bootstrap.Runtime;
     using UniGame.LeoEcs.Shared.Extensions;
 
     [Serializable]
-    public class NetworkCommandsFeature : LeoEcsFeature
+    public class NetworkCommandsFeature : EcsFeature
     {
 
-        protected sealed override UniTask OnInitializeFeatureAsync(IEcsSystems ecsSystems)
+        protected sealed override UniTask OnInitializeAsync(IProtoSystems ecsSystems)
         {
             var world = ecsSystems.GetWorld();
             

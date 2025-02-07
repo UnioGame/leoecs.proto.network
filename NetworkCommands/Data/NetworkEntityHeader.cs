@@ -1,9 +1,12 @@
 namespace Game.Ecs.Network.NetworkCommands.Data
 {
+#if ENABLE_MEMORY_PACK
     using MemoryPack;
-    using UnityEngine.Serialization;
-
+#endif
+    
+#if ENABLE_MEMORY_PACK
     [MemoryPackable]
+#endif
     public partial struct NetworkEntityHeader
     {
         public int Id;
