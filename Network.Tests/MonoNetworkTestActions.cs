@@ -39,6 +39,30 @@ namespace Game.Ecs.Network.Network.Tests
         }
 
         [Button]
+        public void StartServer()
+        {
+            
+        }
+
+        [Button]
+        public void StopServer()
+        {
+            
+        }
+        
+        [Button]
+        public void StartClient()
+        {
+            
+        }
+
+        [Button]
+        public void StopClient()
+        {
+            
+        }
+
+        [Button]
         public void HashTest()
         {
             var valueStream = new NativeStream(1, Allocator.Persistent);

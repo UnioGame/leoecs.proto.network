@@ -1,6 +1,7 @@
 ﻿namespace Game.Ecs.Network.Shared.Components.Requests
 {
     using System;
+    using UnityEngine.Serialization;
 
     /// <summary>
     /// connect to network as host
@@ -16,12 +17,13 @@
     public struct StartNetworkSelfRequest
     {
         public string Address;
-        public int Port;
+        public ushort Port;
         
         /// <summary>
         /// if true, server will be created as a host and allow make server client on his side
         /// overwise server will be only in server mode
         /// </summary>
-        public bool AllowServerClient;
+        [FormerlySerializedAs("AllowServerClient")]
+        public bool AllowHostMode;
     }
 }

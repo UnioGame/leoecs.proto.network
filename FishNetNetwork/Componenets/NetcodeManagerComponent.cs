@@ -1,10 +1,10 @@
-﻿namespace Game.Ecs.Network.Shared.Components.Requests
+﻿namespace Game.Ecs.Network.UnityNetcode.Components
 {
     using System;
-    using UnityEngine.Serialization;
+    using FishNet.Managing;
 
     /// <summary>
-    /// connect to network as host
+    /// netcode Manager
     /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -14,10 +14,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct StartNetworkClientSelfRequest
+    public struct NetcodeManagerComponent
     {
-        public string Address;
-        public ushort Port;
-        public bool StartNetwork;
+        public NetworkManager Value;
     }
 }

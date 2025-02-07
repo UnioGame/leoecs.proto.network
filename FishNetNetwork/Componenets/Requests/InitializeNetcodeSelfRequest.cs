@@ -1,10 +1,9 @@
-﻿namespace Game.Ecs.Network.Shared.Components.Requests
+﻿namespace Game.Ecs.Network.UnityNetcode.Componenets.Requests
 {
     using System;
-    using UnityEngine.Serialization;
 
     /// <summary>
-    /// connect to network as host
+    /// initialize new netcode
     /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -14,10 +13,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct StartNetworkClientSelfRequest
+    public struct InitializeNetcodeSelfRequest
     {
-        public string Address;
-        public ushort Port;
-        public bool StartNetwork;
+        
     }
 }
