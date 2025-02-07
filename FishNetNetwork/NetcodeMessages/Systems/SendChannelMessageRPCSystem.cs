@@ -5,11 +5,14 @@
     using Components;
     using Extensions;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components.Requests;
     using Shared.Aspects;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
+    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -23,43 +26,42 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class SendChannelMessageRPCSystem : IEcsInitSystem, IEcsRunSystem
+    public class SendChannelMessageRPCSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private NetcodeMessageAspect _rpcAspect;
         private NetworkMessageAspect _messageAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _filter;
-        private EcsFilter _requestFilter;
+        private ProtoWorld _world;
+        
+        private ProtoIt _filter= It
+            .Chain<NetcodeMessageChannelComponent>()
+            .End();
+        
+        private ProtoIt _managerFilter = It
+            .Chain<NetcodeManagerComponent>()
+            .End();
+        
+        private ProtoIt _requestFilter= It
+            .Chain<NetworkMessageRequest>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            
-            _filter = _world
-                .Filter<NetcodeMessageChannelComponent>()
-                .End();
-
-            _requestFilter = _world
-                .Filter<NetworkMessageRequest>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var requestEntity in _requestFilter)
             {
                 ref var request = ref _messageAspect.SendMessage.Get(requestEntity);
-                var channelEntity = _filter.First();
+                var channelEntity = _managerFilter.First();
                 
-                if(channelEntity < 0) continue;
+                if(!channelEntity.Ok) continue;
                 
-                ref var channel = ref _rpcAspect.Channel.Get(channelEntity);
+                ref var channel = ref _rpcAspect.Channel.Get(channelEntity.Entity);
+                
                 var channelObject = channel.Value;
+                var connection = channelObject.ClientManager.Connection;
                 var target = channelObject.GetRpcTarget(request.Target);
                 
-                channelObject.SendMessageRPC(request.Data,target);
+                channelObject.SendMessageRPC(connection,request.Data,target);
                 
                 _messageAspect.SendMessage.Del(requestEntity);
             }

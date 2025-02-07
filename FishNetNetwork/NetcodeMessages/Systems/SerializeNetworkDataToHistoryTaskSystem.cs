@@ -4,6 +4,8 @@
     using Aspects;
     using EcsThreads.Systems;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using Network.Serializer;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
@@ -43,20 +45,34 @@
         private NativeArray<EcsEntityNetworkData> _taskResult;
         private int _serializedMaxCount;
         
-        private EcsWorld _world;
+        private ProtoWorld _world;
 
         private EcsNetworkData _networkData;
         private NetworkData _defaultEcsData;
         private EcsNetworkSettings _networkSettings;
 
-        private EcsFilter _netcodeFilter;
-        private EcsFilter _historyFilter;
-        private EcsFilter _serializeFilter;
-        private EcsFilter _networkSyncFilter;
+        private ProtoIt _netcodeFilter= It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
+            .Inc<NetworkTimeComponent>()
+            .End();
+        
+        private ProtoIt _historyFilter= It
+            .Chain<NetworkHistoryComponent>()
+            .End();
+        
+        private ProtoIt _serializeFilter= It
+            .Chain<SerializeNetworkEntityRequest>()
+            .End();
+        
+        private ProtoItExc _networkSyncFilter= It
+            .Chain<NetworkIdComponent>()
+            .Exc<NetworkSyncComponent>()
+            .End();
 
         public override bool IsMultithreaded => _networkSettings.multithreaded;
 
-        protected override void OnInit(IEcsSystems systems)
+        protected override void OnInit(IProtoSystems systems)
         {
             _world = systems.GetWorld();
             _networkData = _world.GetGlobal<EcsNetworkData>();
@@ -66,37 +82,18 @@
             _serializedMaxCount = 0;
             _taskData = new NativeArray<SerializationTaskData>(_serializedMaxCount, Allocator.Persistent);
             _taskResult = new NativeArray<EcsEntityNetworkData>(_serializedMaxCount, Allocator.Persistent);
-            
-            _netcodeFilter = _world
-                .Filter<NetcodeManagerComponent>()
-                .Inc<NetworkConnectionTypeComponent>()
-                .Inc<NetworkTimeComponent>()
-                .End();
-
-            _historyFilter = _world
-                .Filter<NetworkHistoryComponent>()
-                .End();
-
-            _serializeFilter = _world
-                .Filter<SerializeNetworkEntityRequest>()
-                .End();
-            
-            _networkSyncFilter = _world
-                .Filter<NetworkIdComponent>()
-                .Exc<NetworkSyncComponent>()
-                .End();
         }
         
         public override int SetupTask(ref EcsSerializationTask task)
         {
-            var netcodeEntity = _netcodeFilter.First();
-            if (netcodeEntity < 0) return default;
+            var netcodeEntityOk = _netcodeFilter.First();
+            if (!netcodeEntityOk.Ok) return default;
 
-            var historyEntity = _historyFilter.First();
-            if (historyEntity < 0) return default;
+            var historyEntityOk = _historyFilter.First();
+            if (!historyEntityOk.Ok) return default;
 
-            ref var historyComponent = ref _netcodeMessageAspect.History.Get(historyEntity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntity);
+            ref var historyComponent = ref _netcodeMessageAspect.History.Get(historyEntityOk.Entity);
+            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntityOk.Entity);
 
             ref var history = ref historyComponent.History;
             var index = historyComponent.Index;
@@ -122,7 +119,7 @@
             
             var entityMap = historyData.EntityMap;
             var useHashFiltering = _networkSettings.useHashFiltering;
-            var serializationCount = _networkSyncFilter.GetEntitiesCount();
+            var serializationCount = _networkSyncFilter.Len();
             
             if(serializationCount <= 0) return 0;
 

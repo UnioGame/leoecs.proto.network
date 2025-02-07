@@ -2,9 +2,12 @@
 {
     using System;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components.Requests;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+    using UniGame.LeoEcs.Shared.Extensions;
 
     /// <summary>
     /// send message with base rpc channel
@@ -18,31 +21,23 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class ValidateForceResendNetworkSystem : IEcsInitSystem, IEcsRunSystem
+    public class ValidateForceResendNetworkSystem : IEcsRunSystem
     {
         private NetworkMessageAspect _messageAspect;
         
-        private EcsWorld _world;
+        private ProtoWorld _world;
         
-        private EcsFilter _transferRequestFilter;
-        private EcsFilter _forceResendFilter;
+        private ProtoIt _transferRequestFilter= It
+            .Chain<SerializeNetworkEntityRequest>()
+            .End();
+        
+        private ProtoIt _forceResendFilter= It
+            .Chain<NetworkForceResendRequest>()
+            .End();
 
-        public void Init(IEcsSystems systems)
+        public void Run()
         {
-            _world = systems.GetWorld();
-            
-            _transferRequestFilter = _world
-                .Filter<SerializeNetworkEntityRequest>()
-                .End();
-            
-            _forceResendFilter = _world
-                .Filter<NetworkForceResendRequest>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
-        {
-            if(_transferRequestFilter.GetEntitiesCount() <= 0) return;
+            if(!_transferRequestFilter.First().Ok) return;
             
             var forceResend = false;
             

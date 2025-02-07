@@ -4,6 +4,8 @@
     using System.Text;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using Shared.Aspects;
@@ -28,7 +30,7 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class NetcodeDebugStatisticsSystem : IEcsInitSystem, IEcsRunSystem
+    public class NetcodeDebugStatisticsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
@@ -36,53 +38,39 @@
         private NetcodeMessageAspect _messageAspect;
         private NetworkMessageAspect _networkMessageAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _receiveFilter;
-        private EcsFilter _networkFilter;
-        private EcsFilter _messageFilter;
-        
+        private ProtoWorld _world;
         private EcsNetworkSettings _networkData;
         private StringBuilder _stringBuilder = new StringBuilder(512);
         
+        private ProtoIt _receiveFilter= It
+            .Chain<NetworkReceiveResultComponent>()
+            .End();
+        
+        private ProtoIt _networkFilter= It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
+            .End();
+        
+        private ProtoIt _messageFilter= It
+            .Chain<NetworkMessageDataComponent>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-
-            _networkData = _world.GetGlobal<EcsNetworkSettings>();
-            
-            _networkFilter = _world.Filter<NetcodeManagerComponent>()
-                .Inc<NetworkConnectionTypeComponent>()
-                .End();
-            
-            _receiveFilter = _world
-                .Filter<NetworkReceiveResultComponent>()
-                .End();
-            
-            _receiveFilter = _world
-                .Filter<NetworkReceiveResultComponent>()
-                .End();
-            
-            _messageFilter = _world
-                .Filter<NetworkMessageDataComponent>()
-                .End();
-            
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             if (!_networkData.enableDebug) return;
             
-            var networkEntity = _networkFilter.First();
-            if (networkEntity < 0) return;
+            var networkEntityOk = _networkFilter.First();
+            if (!networkEntityOk.Ok) return;
             
+            var networkEntity = networkEntityOk.Entity;
             ref var connection = ref _networkAspect.ConnectionType.Get(networkEntity);
             ref var managerComponent = ref _netcodeAspect.Manager.Get(networkEntity);
             ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(networkEntity);
             
             if(!connection.IsActive)return;
             
-            if(_receiveFilter.GetEntitiesCount() == 0 && _messageFilter.GetEntitiesCount() == 0) return;
+            
+            if(_receiveFilter.Len() == 0 && _messageFilter.Len() == 0) return;
             
             _stringBuilder.Clear();
             

@@ -3,6 +3,8 @@
     using System;
     using Components;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
 #if ENABLE_IL2CPP
@@ -14,21 +16,15 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class MessageCleanerSystem : IEcsInitSystem, IEcsRunSystem
+    public class MessageCleanerSystem : IEcsRunSystem
     {
-        private EcsWorld _world;
-        private EcsFilter _sentMessagesFilter;
-        private EcsFilter _receivedMessagesFilter;
+        private ProtoWorld _world;
+        
+        private ProtoIt _receivedMessagesFilter= It
+            .Chain<ReceivedMessageComponent>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            _receivedMessagesFilter = _world
-                .Filter<ReceivedMessageComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var receivedMessageEntity in _receivedMessagesFilter)
             {

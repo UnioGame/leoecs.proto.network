@@ -4,6 +4,7 @@
     using Cysharp.Threading.Tasks;
     using Data;
     using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetcodeClients;
     using NetcodeMessages;
     using NetworkCommands.Data;
@@ -97,9 +98,9 @@
             ecsSystems.Add(new UpdateNetcodeTimeSystem());
             
             //additional feature for clients
-            await clientsFeature.InitializeFeatureAsync(ecsSystems);
+            await clientsFeature.InitializeAsync(ecsSystems);
             //register rpc commands
-            await messagingFeature.InitializeFeatureAsync(ecsSystems);
+            await messagingFeature.InitializeAsync(ecsSystems);
    
             
             //remove stop request

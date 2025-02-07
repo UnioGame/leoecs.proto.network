@@ -12,6 +12,6 @@
     [Serializable]
     public struct NetcodeMessageSenderId
     {
-        public ulong Value;
+        public int Value;
     }
 }

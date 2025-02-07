@@ -2,11 +2,14 @@
 {
     using System;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using NetworkCommands.Components.Requests;
     using Shared.Aspects;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+    using UniGame.LeoEcs.Shared.Extensions;
     using UnityNetcode.Aspects;
 
     /// <summary>
@@ -21,29 +24,22 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class ValidateNetworkEventSystem : IEcsInitSystem, IEcsRunSystem
+    public class ValidateNetworkEventSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetworkMessageAspect _networkMessageAspect;
         
-        private EcsWorld _world;
+        private ProtoWorld _world;
         
-        private EcsFilter _networkValueFilter;
+        private ProtoItExc _networkValueFilter= It
+            .Chain<NetworkIdComponent>()
+            .Inc<NetworkEventComponent>()
+            .Exc<NetworkSyncComponent>()
+            .Exc<SerializeNetworkEntityRequest>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-
-            _networkValueFilter = _world
-                .Filter<NetworkIdComponent>()
-                .Inc<NetworkEventComponent>()
-                .Exc<NetworkSyncComponent>()
-                .Exc<SerializeNetworkEntityRequest>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var valueEntity in _networkValueFilter)
             {

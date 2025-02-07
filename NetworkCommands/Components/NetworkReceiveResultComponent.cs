@@ -19,7 +19,7 @@
         public int Tick;
         public float Time;
         public int Count;
-        public ulong Sender;
+        public int Sender;
         public long Size;
         public NativeArray<byte> RawData;
         public NativeArray<ReceiveEntityData> Data;

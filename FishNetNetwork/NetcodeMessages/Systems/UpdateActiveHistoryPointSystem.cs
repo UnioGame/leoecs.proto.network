@@ -3,6 +3,8 @@
     using System;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Components;
     using NetworkCommands.Data;
     using Shared.Aspects;
@@ -24,47 +26,40 @@
 #endif
     [Serializable]
     [ECSDI]
-    public sealed class UpdateActiveHistoryPointSystem : IEcsInitSystem, IEcsRunSystem
+    public sealed class UpdateActiveHistoryPointSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _rpcAspect;
 
-        private EcsWorld _world;
+        private ProtoWorld _world;
 
-        private EcsFilter _netcodeFilter;
-        private EcsFilter _historyFilter;
-        private int _historyEntity;
+        private ProtoIt _netcodeFilter= It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkTimeComponent>()
+            .End();
+        
+        private ProtoIt _historyFilter= It
+            .Chain<NetworkHistoryComponent>()
+            .End();
+        
+        private ProtoEntity _historyEntity;
         private NetworkData _networkSettings;
 
-        public void Init(IEcsSystems systems)
+        public void Run()
         {
-            _world = systems.GetWorld();
-            _networkSettings = _world.GetGlobal<NetworkData>();
+            var netcodeEntityOk = _netcodeFilter.First();
+            if (!netcodeEntityOk.Ok) return;
 
-            _netcodeFilter = _world
-                .Filter<NetcodeManagerComponent>()
-                .Inc<NetworkTimeComponent>()
-                .End();
+            var historyEntityOk = _historyFilter.First();
+            if (!historyEntityOk.Ok) return;
 
-            _historyFilter = _world
-                .Filter<NetworkHistoryComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems ecsSystems)
-        {
-            var netcodeEntity = _netcodeFilter.First();
-            if (netcodeEntity < 0) return;
-
-            _historyEntity = _historyFilter.First();
-            if (_historyEntity < 0) return;
-
+            _historyEntity = historyEntityOk.Entity;
             ref var historyComponent = ref _rpcAspect.History.Get(_historyEntity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntity);
+            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntityOk.Entity);
 
             var time = timeComponent.Time;
-            var tick = timeComponent.Tick;
+            var tick = (int)timeComponent.Tick;
             var historyTick = historyComponent.Tick;
 
             if (tick == historyTick) return;

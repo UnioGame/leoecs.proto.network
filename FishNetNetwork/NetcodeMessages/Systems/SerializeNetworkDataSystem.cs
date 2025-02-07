@@ -4,6 +4,8 @@
     using System.Buffers;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using Network.Serializer;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
@@ -31,64 +33,57 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class SerializeNetworkDataSystem : IEcsInitSystem, IEcsRunSystem
+    public class SerializeNetworkDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _netcodeMessageAspect;
         private NetworkMessageAspect _networkMessageAspect;
 
-        private EcsWorld _world;
+        private ProtoWorld _world;
 
         private EcsNetworkSettings _networkSettings;
 
-        private EcsFilter _netcodeFilter;
-        private EcsFilter _historyFilter;
-        private EcsFilter _transferRequestFilter;
-        private EcsFilter _forceResendFilter;
+        private ProtoIt _netcodeFilter= It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
+            .Inc<NetworkTimeComponent>()
+            .End();
+        
+        private ProtoIt _historyFilter= It
+            .Chain<NetworkHistoryComponent>()
+            .End();
+        
+        private ProtoIt _transferRequestFilter= It
+            .Chain<NetworkTransferRequest>()
+            .End();
         
         private NativeArray<byte> _arrayBuffer;
         private ArrayBufferWriter<byte> _arrayBufferWriter;
         private int _headerSize;
         private int _entityHeaderSize;
 
-        public void Init(IEcsSystems systems)
+        public SerializeNetworkDataSystem()
         {
-            _world = systems.GetWorld();
-            _networkSettings = _world.GetGlobal<EcsNetworkSettings>();
             _arrayBuffer = new NativeArray<byte>(512,Allocator.Persistent);
             _headerSize = UnsafeUtility.SizeOf<NetworkHeader>();
             _entityHeaderSize = UnsafeUtility.SizeOf<NetworkEntityHeader>();
             _arrayBufferWriter = new ArrayBufferWriter<byte>(512);
-            
-            _netcodeFilter = _world
-                .Filter<NetcodeManagerComponent>()
-                .Inc<NetworkConnectionTypeComponent>()
-                .Inc<NetworkTimeComponent>()
-                .End();
-
-            _historyFilter = _world
-                .Filter<NetworkHistoryComponent>()
-                .End();
-
-            _transferRequestFilter = _world
-                .Filter<NetworkTransferRequest>()
-                .End();
         }
 
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
-            var serializeEntity = _transferRequestFilter.First();
-            if (serializeEntity < 0) return;
+            var serializeEntityOk = _transferRequestFilter.First();
+            if (!serializeEntityOk.Ok) return;
             
-            var netcodeEntity = _netcodeFilter.First();
-            if (netcodeEntity < 0) return;
+            var netcodeEntityOk = _netcodeFilter.First();
+            if (!netcodeEntityOk.Ok) return;
 
-            var historyEntity = _historyFilter.First();
-            if (historyEntity < 0) return;
+            var historyEntityOk = _historyFilter.First();
+            if (!historyEntityOk.Ok) return;
 
-            ref var historyComponent = ref _netcodeMessageAspect.History.Get(historyEntity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntity);
+            ref var historyComponent = ref _netcodeMessageAspect.History.Get(historyEntityOk.Entity);
+            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntityOk.Entity);
 
             ref var history = ref historyComponent.History;
             var index = historyComponent.Index;
@@ -139,7 +134,8 @@
             _arrayBuffer.Serialize(ref header,0);
             var size = offset;
             
-            ref var serializeResult = ref _netcodeMessageAspect.SerializationResult.Add(serializeEntity);
+            ref var serializeResult = ref _netcodeMessageAspect
+                .SerializationResult.Add(serializeEntityOk.Entity);
             serializeResult.Value =  _arrayBuffer;
             serializeResult.Size = size;
         }

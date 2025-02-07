@@ -1,5 +1,6 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.NetcodeMessages.Data
 {
+    using FishNet.Connection;
     using FishNet.Object;
     using MemoryPack;
     using NetworkCommands.Components;
@@ -12,15 +13,15 @@
     {
         
         [TargetRpc(ExcludeServer = false)]
-        public void SendMessageRPC(byte[] data,RpcParams rpcParams)
+        public void SendMessageRPC(NetworkConnection connection,byte[] data,RpcParams rpcParams)
         {
             //TODO add defines check to send from client to client
             var result = MemoryPackSerializer.Deserialize<string>(data);
-            Debug.Log($"SendFromServerRPC: {result}");
+            Debug.Log($"SendFromServerRPC: {result} from {connection.ClientId}");
         }
         
         [TargetRpc(ExcludeServer = true)]
-        public void SendToClientRPC(byte[] data,int size,RpcParams rpcParams)
+        public void SendToClientRPC(NetworkConnection connection,byte[] data,int size,RpcParams rpcParams)
         {
             var world = LeoEcsGlobalData.World;
             var entity = world.NewEntity();
@@ -28,7 +29,7 @@
             ref var rpcDataComponent = ref world.AddComponent<NetworkMessageDataComponent>(entity);
             rpcDataComponent.Value = data;
             rpcDataComponent.Size = size;
-            rpcDataComponent.Sender = rpcParams.SenderId;
+            rpcDataComponent.Sender = connection.ClientId;
         }
 
     }

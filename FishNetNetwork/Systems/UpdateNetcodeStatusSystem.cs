@@ -4,10 +4,13 @@
     using Aspects;
     using Components;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Data;
     using Shared.Aspects;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+    using UniGame.LeoEcs.Shared.Extensions;
 
     /// <summary>
     /// initialize netcode data
@@ -21,30 +24,21 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class UpdateNetcodeStatusSystem : IEcsInitSystem, IEcsRunSystem
+    public class UpdateNetcodeStatusSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _filter;
+        private ProtoWorld _world;
+        private ProtoIt _filter= It
+            .Chain<NetcodeManagerComponent>()
+            .End();
         
-        private EcsFilter _networkLinkFilter;
+        private ProtoIt _networkLinkFilter= It
+            .Chain<NetworkLinkComponent>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            
-            _filter = _world
-                .Filter<NetcodeManagerComponent>()
-                .End();
-
-            _networkLinkFilter = _world
-                .Filter<NetworkLinkComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var entity in _filter)
             {
@@ -54,23 +48,20 @@
                 ref var agentComponent = ref _netcodeAspect.Agent.Get(entity);
                 ref var connectionTypeComponent = ref _networkAspect.ConnectionType.Get(entity);
                 
-                var isClient = manager.IsClient || manager.IsHost;
-                var isServer = manager.IsServer;
+                var isClient = manager.IsClientStarted || manager.IsHostStarted;
+                var isServer = manager.IsServerStarted;
         
                 ref var statusComponent = ref _netcodeAspect.Status.Get(entity);
                 statusComponent.IsConnected = true;
                 statusComponent.Status = ConnectionStatus.Connected;
                 connectionTypeComponent.IsClient = isClient;
                 connectionTypeComponent.IsServer = isServer;
+                connectionTypeComponent.IsHost = manager.IsHostStarted;
                 connectionTypeComponent.IsActive = isClient || isServer;
-        
-                agentComponent.Id = manager.LocalClientId;
+                
+                agentComponent.Id = manager.ClientManager.Connection.ClientId;
             }
 
-            foreach (var linkEntity in _networkLinkFilter)
-            {
-                var linkComponent = _networkAspect.NetworkLink.Get(linkEntity);
-            }
         }
     }
 }

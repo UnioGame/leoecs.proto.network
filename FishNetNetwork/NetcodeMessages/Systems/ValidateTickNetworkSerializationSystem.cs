@@ -3,6 +3,8 @@
     using System;
     using Components;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using NetworkCommands.Data;
@@ -26,60 +28,50 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class ValidateTickNetworkSerializationSystem : IEcsInitSystem, IEcsRunSystem
+    public class ValidateTickNetworkSerializationSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetworkMessageAspect _messageAspect;
         
-        private EcsWorld _world;
+        private ProtoWorld _world;
         
-        private EcsFilter _filter;
-        private EcsFilter _netcodeFilter;
-        private EcsFilter _historyFilter;
-        private EcsFilter _networkValueFilter;
+        private ProtoIt _filter= It
+            .Chain<NetcodeMessageChannelComponent>()
+            .End();
+        
+        private ProtoIt _netcodeFilter = It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
+            .Inc<NetworkTimeComponent>()
+            .End();
+        
+        private ProtoIt _historyFilter= It
+            .Chain<NetworkHistoryComponent>()
+            .End();
+        
+        private ProtoItExc _networkValueFilter= It
+            .Chain<NetworkIdComponent>()
+            .Exc<NetworkSyncComponent>()
+            .End();
 
         private EcsNetworkSettings _networkSettings;
-
-        public void Init(IEcsSystems systems)
+        
+        public void Run()
         {
-            _world = systems.GetWorld();
-            _networkSettings = _world.GetGlobal<EcsNetworkSettings>();
+            var netcodeEntityOk = _netcodeFilter.First();
+            if (!netcodeEntityOk.Ok) return;
             
-            _filter = _world
-                .Filter<NetcodeMessageChannelComponent>()
-                .End();
-
-            _netcodeFilter = _world
-                .Filter<NetcodeManagerComponent>()
-                .Inc<NetworkConnectionTypeComponent>()
-                .Inc<NetworkTimeComponent>()
-                .End();
-
-            _historyFilter = _world
-                .Filter<NetworkHistoryComponent>()
-                .End();
-
-            _networkValueFilter = _world
-                .Filter<NetworkIdComponent>()
-                .Exc<NetworkSyncComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
-        {
-            var netcodeEntity = _netcodeFilter.First();
-            if (netcodeEntity < 0) return;
+            var rpcEntityOk = _filter.First();
+            if (!rpcEntityOk.Ok) return;
             
-            var rpcEntity = _filter.First();
-            if (rpcEntity < 0) return;
-            
-            var historyEntity = _historyFilter.First();
-            if(historyEntity < 0) return;
-            
-            ref var connectionType = ref _netcodeAspect.ConnectionType.Get(netcodeEntity);
-            ref var historyComponent = ref _messageAspect.History.Get(historyEntity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntity);
+            var historyEntityOk = _historyFilter.First();
+            if(!historyEntityOk.Ok) return;
+
+            var targetEntity = netcodeEntityOk.Entity;
+            ref var connectionType = ref _netcodeAspect.ConnectionType.Get(targetEntity);
+            ref var historyComponent = ref _messageAspect.History.Get(targetEntity);
+            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(targetEntity);
             
             var time = timeComponent.Time;
             var tick = timeComponent.Tick;
@@ -108,7 +100,7 @@
                 false => _networkSettings.defaultClientTarget
             };
                 
-            transferRequest.Tick = tick;
+            transferRequest.Tick = (int)tick;
             transferRequest.Time = time;
         }
     }

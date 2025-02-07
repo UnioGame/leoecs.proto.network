@@ -3,6 +3,8 @@
     using System;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using Shared.Aspects;
@@ -22,39 +24,31 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class RemoveClientMissingSyncValuesSystem : IEcsInitSystem, IEcsRunSystem
+    public class RemoveClientMissingSyncValuesSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private NetworkSyncAspect _networkSyncAspect;
         private NetcodeMessageAspect _messageAspect;
         private NetworkMessageAspect _networkMessageAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _filter;
-        private EcsFilter _requestFilter;
-        private EcsFilter _syncValueFilter;
-        private EcsFilter _networkFilter;
+        private ProtoWorld _world;
 
-        public void Init(IEcsSystems systems)
+        private ProtoIt _filter= It
+            .Chain<NetworkIdComponent>()
+            .Inc<NetworkSyncComponent>()
+            .End();
+        
+        private ProtoIt _networkFilter= It
+            .Chain<NetworkConnectionTypeComponent>()
+            .Inc<NetworkSyncValuesComponent>()
+            .End();
+
+        public void Run()
         {
-            _world = systems.GetWorld();
-
-            _networkFilter = _world
-                .Filter<NetworkConnectionTypeComponent>()
-                .Inc<NetworkSyncValuesComponent>()
-                .End();
+            var networkEntityResult = _networkFilter.First();
+            if (!networkEntityResult.Ok) return;
             
-            _filter = _world
-                .Filter<NetworkIdComponent>()
-                .Inc<NetworkSyncComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
-        {
-            var networkEntity = _networkFilter.First();
-            if (networkEntity < 0) return;
-            
+            var networkEntity = networkEntityResult.Entity;
             ref var syncValuesComponent = ref _messageAspect.SyncValues.Get(networkEntity);
             
             foreach (var entity in _filter)

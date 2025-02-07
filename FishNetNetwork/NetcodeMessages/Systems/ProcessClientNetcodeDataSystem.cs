@@ -27,7 +27,7 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class ProcessClientNetcodeDataSystem : IEcsInitSystem, IEcsRunSystem, IEcsDestroySystem
+    public class ProcessClientNetcodeDataSystem : IEcsRunSystem, IEcsDestroySystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
@@ -35,31 +35,25 @@
         private NetworkMessageAspect _networkMessageAspect;
 
         private ProtoWorld _world;
-        private EcsFilter _receiveFilter;
-        private EcsFilter _networkFilter;
-        private EcsFilter _historyFilter;
-
         private EcsNetworkData _networkData;
         public NativeHashMap<int, ProtoPackedEntity> _entityCache;
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            _networkData = _world.GetGlobal<EcsNetworkData>();
-            _entityCache = new NativeHashMap<int, ProtoPackedEntity>(256, Allocator.Persistent);
-            
-            _networkFilter = _world
-                .Filter<NetworkConnectionTypeComponent>()
-                .Inc<NetworkSyncValuesComponent>()
-                .End();
+        private ProtoIt _receiveFilter= It
+            .Chain<NetworkReceiveResultComponent>()
+            .End();
+        
+        private ProtoIt _networkFilter= It
+            .Chain<NetworkConnectionTypeComponent>()
+            .Inc<NetworkSyncValuesComponent>()
+            .End();
+        
+        private ProtoIt _historyFilter= It
+            .Chain<NetworkHistoryComponent>()
+            .End();
 
-            _historyFilter = _world
-                .Filter<NetworkHistoryComponent>()
-                .End();
-            
-            _receiveFilter = _world
-                .Filter<NetworkReceiveResultComponent>()
-                .End();
+        public ProcessClientNetcodeDataSystem()
+        {
+            _entityCache = new NativeHashMap<int, ProtoPackedEntity>(256, Allocator.Persistent);
         }
         
         public void Destroy()
@@ -70,16 +64,16 @@
         public void Run()
         {
             var networkEntity = _networkFilter.First();
-            if (networkEntity < 0) return;
+            if (!networkEntity.Ok) return;
             
             //process only data coming from server
-            ref var connection = ref _netcodeAspect.ConnectionType.Get(networkEntity);
-            ref var syncValuesComponent = ref _messageAspect.SyncValues.Get(networkEntity);
+            ref var connection = ref _netcodeAspect.ConnectionType.Get(networkEntity.Entity);
+            ref var syncValuesComponent = ref _messageAspect.SyncValues.Get(networkEntity.Entity);
             
             if(!connection.IsClient) return;
 
             var syncIds = syncValuesComponent.Values;
-            if (_receiveFilter.GetEntitiesCount() <= 0) return;
+            if (!_receiveFilter.First().Ok) return;
             
             //clear local sync values
             _entityCache.Clear();
@@ -94,15 +88,14 @@
                 {
                     var entityData = entities[i];
                     var syncId = entityData.Id;
-                    var targetEntity = -1;
+                    ProtoEntity targetEntity = default;
                     
                     if (syncIds.TryGetValue(syncId, out var entityPacked))
                     {
                         if(entityPacked.Unpack(_world, out var syncEntity)) 
                             targetEntity = syncEntity;
                     }
-
-                    if (targetEntity < 0)
+                    else
                     {
                         targetEntity = _world.NewEntity();
                         ref var syncIdComponent = ref _networkMessageAspect.NetworkId.Add(targetEntity);

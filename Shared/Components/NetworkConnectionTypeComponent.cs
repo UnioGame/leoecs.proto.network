@@ -18,5 +18,6 @@
         public bool IsActive;
         public bool IsClient;
         public bool IsServer;
+        public bool IsHost;
     }
 }

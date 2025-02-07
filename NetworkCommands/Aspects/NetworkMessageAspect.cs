@@ -5,6 +5,7 @@
     using Components.Events;
     using Components.Requests;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using Shared.Components;
     using Shared.Components.Requests;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
@@ -22,25 +23,25 @@
     [Serializable]
     public class NetworkMessageAspect : EcsAspect
     {
-        public EcsPool<NetworkMessageChannelSource> Source;
-        public EcsPool<NetworkIdComponent> NetworkId;
-        public EcsPool<NetworkSyncValuesComponent> SyncValues;
-        public EcsPool<NetworkTargetComponent> Target;
-        public EcsPool<NetworkHistoryComponent> History;
-        public EcsPool<NetworkSerializationResult> SerializationResult;
-        public EcsPool<NetworkSyncComponent> ServerEntity;
-        public EcsPool<NetworkReceiveResultComponent> ReceiveResult;
-        public EcsPool<NetworkEventComponent> NetworkEvent;
+        public ProtoPool<NetworkMessageChannelSource> Source;
+        public ProtoPool<NetworkIdComponent> NetworkId;
+        public ProtoPool<NetworkSyncValuesComponent> SyncValues;
+        public ProtoPool<NetworkTargetComponent> Target;
+        public ProtoPool<NetworkHistoryComponent> History;
+        public ProtoPool<NetworkSerializationResult> SerializationResult;
+        public ProtoPool<NetworkSyncComponent> ServerEntity;
+        public ProtoPool<NetworkReceiveResultComponent> ReceiveResult;
+        public ProtoPool<NetworkEventComponent> NetworkEvent;
         
         // === requests ===
         
         //request to remove entity from network
-        public EcsPool<NetworkTransferRequest> Transfer;
-        public EcsPool<NetworkMessageRequest> SendMessage;
-        public EcsPool<SerializeNetworkEntityRequest> SerializeEntity;
-        public EcsPool<NetworkForceResendRequest> ForceResend;
+        public ProtoPool<NetworkTransferRequest> Transfer;
+        public ProtoPool<NetworkMessageRequest> SendMessage;
+        public ProtoPool<SerializeNetworkEntityRequest> SerializeEntity;
+        public ProtoPool<NetworkForceResendRequest> ForceResend;
         
         //events
-        public EcsPool<EcsNetworkDataSendEvent> DataSendEvent;
+        public ProtoPool<EcsNetworkDataSendEvent> DataSendEvent;
     }
 }

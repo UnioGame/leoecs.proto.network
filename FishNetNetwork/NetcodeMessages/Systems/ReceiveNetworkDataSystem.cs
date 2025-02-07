@@ -4,6 +4,8 @@
     using System.Buffers;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using MemoryPack.Compression;
     using Network.Serializer;
     using NetworkCommands.Aspects;
@@ -29,33 +31,24 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class ReceiveNetworkDataSystem : IEcsInitSystem, IEcsRunSystem
+    public class ReceiveNetworkDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _messageAspect;
         private NetworkMessageAspect _networkMessageAspect;
 
-        private EcsWorld _world;
-        private EcsFilter _receiveFilter;
+        private ProtoWorld _world;
+        private ProtoIt _receiveFilter= It
+            .Chain<NetworkMessageDataComponent>()
+            .End();
         
         private EcsNetworkData _networkData;
         private EcsNetworkSettings _networkSettings;
         
         private byte[] _rentArray;
-        
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            _networkData = _world.GetGlobal<EcsNetworkData>();
-            _networkSettings = _world.GetGlobal<EcsNetworkSettings>();
-            
-            _receiveFilter = _world
-                .Filter<NetworkMessageDataComponent>()
-                .End();
-        }
 
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var entity in _receiveFilter)
             {

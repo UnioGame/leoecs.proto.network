@@ -6,6 +6,8 @@
     using Components;
     using Extensions;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using NetworkCommands.Components.Requests;
@@ -29,66 +31,55 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class SendNetworkDataSystem : IEcsInitSystem, IEcsRunSystem
+    public class SendNetworkDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private NetworkMessageAspect _networkMessageAspect;
         private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _messageAspect;
         
-        private EcsFilter _netcodeFilter;
-        private EcsFilter _transferFilter;
-        private EcsFilter _filter;
-        private EcsFilter _dataFilter;
-        private EcsFilter _historyFilter;
-        
-        private EcsWorld _world;
+        private ProtoWorld _world;
         private EcsNetworkSettings _networkSettings;
         private object[] _components;
 
-        public void Init(IEcsSystems systems)
+        private ProtoIt _netcodeFilter= It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkTimeComponent>()
+            .End();
+
+        private ProtoIt _transferFilter = It
+            .Chain<NetworkTransferRequest>()
+            .Inc<NetworkSerializationResult>()
+            .End();
+        
+        private ProtoIt _filter= It
+            .Chain<NetcodeMessageChannelComponent>()
+            .End();
+        
+        private ProtoIt _historyFilter= It
+            .Chain<NetworkHistoryComponent>()
+            .End();
+
+        public void Run()
         {
-            _world = systems.GetWorld();
-            _networkSettings = _world.GetGlobal<EcsNetworkSettings>();
+            var transferEntityOk = _transferFilter.First();
+            if (!transferEntityOk.Ok) return;
             
-            _filter = _world
-                .Filter<NetcodeMessageChannelComponent>()
-                .End();
-
-            _netcodeFilter = _world
-                .Filter<NetcodeManagerComponent>()
-                .Inc<NetworkTimeComponent>()
-                .End();
-            
-            _historyFilter = _world
-                .Filter<NetworkHistoryComponent>()
-                .End();
-
-            _transferFilter = _world
-                .Filter<NetworkTransferRequest>()
-                .Inc<NetworkSerializationResult>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
-        {
-            var transferEntity = _transferFilter.First();
-            if (transferEntity < 0) return;
-            
+            var transferEntity = transferEntityOk.Entity;
             ref var transferComponent = ref _networkMessageAspect.Transfer.Get(transferEntity);
             ref var targetComponent = ref _networkMessageAspect.Target.Get(transferEntity);
             ref var seializationResult = ref _messageAspect.SerializationResult.Get(transferEntity);
             
-            var netcodeEntity = _netcodeFilter.First();
-            if (netcodeEntity < 0) return;
+            var netcodeEntityOk = _netcodeFilter.First();
+            if (!netcodeEntityOk.Ok) return;
             
-            var rpcEntity = _filter.First();
-            if (rpcEntity < 0) return;
+            var rpcEntityOk = _filter.First();
+            if (!rpcEntityOk.Ok) return;
             
-            var historyEntity = _historyFilter.First();
-            if (historyEntity < 0) return;
+            var historyEntityOk = _historyFilter.First();
+            if (!historyEntityOk.Ok) return;
             
-            ref var channel = ref _messageAspect.Channel.Get(rpcEntity);
+            ref var channel = ref _messageAspect.Channel.Get(rpcEntityOk.Entity);
             var channelObject = channel.Value;
 
             ref var resultArray = ref seializationResult.Value;
@@ -100,7 +91,9 @@
                 .CopyTo(targetArray);
             
             var target = channelObject.GetRpcTarget(targetComponent.Value, targetComponent.Id);
-            channelObject.SendToClientRPC(targetArray,size,target);
+            var connection = channelObject.ClientManager.Connection;
+            
+            channelObject.SendToClientRPC(connection,targetArray,size,target);
             
             ArrayPool<byte>.Shared.Return(targetArray);
             

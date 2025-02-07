@@ -3,9 +3,12 @@
     using System;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Components;
     using Shared.Aspects;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+    using UniGame.LeoEcs.Shared.Extensions;
 
     /// <summary>
     /// send message with base rpc channel
@@ -19,31 +22,21 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class RemoveNetworkReceivedDataSystem : IEcsInitSystem, IEcsRunSystem
+    public class RemoveNetworkReceivedDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private NetcodeMessageAspect _messageAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _filter;
-        private EcsFilter _requestFilter;
-        private EcsFilter _dataFilter;
-        private EcsFilter _messageFilter;
+        private ProtoWorld _world;
+        private ProtoIt _filter= It
+            .Chain<NetworkMessageDataComponent>()
+            .End();
+        
+        private ProtoIt _messageFilter= It
+            .Chain<NetworkReceiveResultComponent>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-
-            _filter = _world
-                .Filter<NetworkMessageDataComponent>()
-                .End();
-            
-            _messageFilter = _world
-                .Filter<NetworkReceiveResultComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var entity in _filter)
                 _world.DelEntity(entity);

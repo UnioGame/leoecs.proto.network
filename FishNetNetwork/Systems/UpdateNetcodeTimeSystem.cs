@@ -5,9 +5,12 @@
     using Components;
     using Data;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using Shared.Aspects;
     using Shared.Data;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+    using UniGame.LeoEcs.Shared.Extensions;
 
     /// <summary>
     /// initialize netcode data
@@ -21,29 +24,23 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class UpdateNetcodeTimeSystem : IEcsInitSystem, IEcsRunSystem
+    public class UpdateNetcodeTimeSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _filter;
+        private ProtoWorld _world;
         private EcsFilter _netFilter;
         
         private UnityNetcodeSettings _netcodeSettings;
         private EcsNetworkSettings _networkSettings;
         private bool _isLoading;
+        
+        private ProtoIt _filter= It
+            .Chain<NetcodeManagerComponent>()
+            .End();
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            
-            _filter = _world
-                .Filter<NetcodeManagerComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var entity in _filter)
             {
@@ -51,8 +48,9 @@
                ref var timeComponent = ref _networkAspect.NetworkTime.Get(entity);
                
                var manager = managerComponent.Value;
-               timeComponent.Time = manager.ServerTime.TimeAsFloat;
-               timeComponent.Tick = manager.ServerTime.Tick;
+               
+               timeComponent.Time = manager.TimeManager.ServerUptime;
+               timeComponent.Tick = manager.TimeManager.Tick;
             }
         }
 

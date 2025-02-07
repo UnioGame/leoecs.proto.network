@@ -4,6 +4,8 @@
     using Aspects;
     using Componenets.Requests;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using Shared.Aspects;
     using Shared.Components;
     using Shared.Components.Requests;
@@ -23,32 +25,25 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class StartNetcodeServerSystem : IEcsInitSystem, IEcsRunSystem
+    public class StartNetcodeServerSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         
-        private EcsWorld _world;
-        private EcsFilter _filter;
-        private EcsFilter _netFilter;
+        private ProtoWorld _world;
+        
+        private ProtoItExc _filter= It
+            .Chain<StartNetworkSelfRequest>()
+            .Exc<InitializeNetcodeSelfRequest>()
+            .End();
+        
+        private ProtoIt _netFilter= It
+            .Chain<NetworkSourceComponent>()
+            .End();
         
         private bool _isLoading;
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            
-            _filter = _world
-                .Filter<StartNetworkSelfRequest>()
-                .Exc<InitializeNetcodeSelfRequest>()
-                .End();
-
-            _netFilter = _world
-                .Filter<NetworkSourceComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             foreach (var entity in _filter)
             {
@@ -57,28 +52,24 @@
                 var address = request.Address;
                 var port = request.Port;
 
-                var netcodeEntity = _netFilter.First();
-                if (netcodeEntity < 0)
-                {
+                var netcodeEntityResult = _netFilter.First();
+                if (!netcodeEntityResult.Ok)
                     continue;
-                }
-      
+
+                var netcodeEntity = netcodeEntityResult.Entity;
                 ref var managerComponent = ref _netcodeAspect.Manager.Get(netcodeEntity);
                 ref var transportComponent = ref _netcodeAspect.Transport.Get(netcodeEntity);
 
                 var manager = managerComponent.Value;
                 var transport = transportComponent.Value;
                 
-                if(manager.IsServer || manager.IsHost) continue;
-                    
-                transport.ConnectionData.Address = address;
-                transport.ConnectionData.Port = (ushort)port;
-                
+                if(manager.IsServerStarted || manager.IsHostStarted) continue;
+
+                var serverManager = manager.ServerManager;
+                transport.Address = address;
+                transport.Port = (ushort)port;
                 //start server
-                manager.OnClientConnectedCallback += ClientConnected_Callback;
-                var connected = request.AllowHostMode 
-                    ? manager.StartHost() 
-                    : manager.StartServer();
+                var connected = serverManager.StartConnection(port);
                     
                 if(!connected)
                 {
@@ -86,7 +77,7 @@
                     continue;
                 }
 
-                var mode = request.AllowHostMode ? "host" : "server";
+                var mode = request.AllowHostMode ? "host mode" : "server mode";
                 GameLog.Log($"Successfully started {mode} for address: {address} | port: {port}");
                 
                 ref var connectedEvent = ref _networkAspect.ServerConnected.Add(netcodeEntity);

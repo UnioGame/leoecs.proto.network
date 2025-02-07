@@ -16,6 +16,6 @@
     public struct NetworkTimeComponent
     {
         public float Time;
-        public int Tick;
+        public uint Tick;
     }
 }

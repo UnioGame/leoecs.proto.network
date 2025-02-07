@@ -3,6 +3,8 @@
     using System;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using NetworkCommands.Components.Requests;
@@ -24,44 +26,34 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class RemoveNetworkRequestsSystem : IEcsInitSystem, IEcsRunSystem
+    public class RemoveNetworkRequestsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private NetworkMessageAspect _messageAspect;
         private NetcodeMessageAspect _rpcAspect;
         
-        private EcsWorld _world;
+        private ProtoWorld _world;
         
-        private EcsFilter _filter;
-        private EcsFilter _transferFilter;
-        private EcsFilter _networkFilter;
-        private EcsFilter _eventFilter;
-
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            
-            _networkFilter = _world
-                .Filter<NetworkConnectionTypeComponent>()
-                .End();
-            
-            _transferFilter = _world
-                .Filter<NetworkTransferRequest>()
-                .End();
-            
-            _eventFilter = _world
-                .Filter<SerializeNetworkEntityRequest>()
-                .Inc<NetworkEventComponent>()
-                .Exc<NetworkSyncComponent>()
-                .End();
-            
-            _filter = _world
-                .Filter<NetworkIdComponent>()
-                .Exc<NetworkSyncComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        private ProtoItExc _filter= It
+            .Chain<NetworkIdComponent>()
+            .Exc<NetworkSyncComponent>()
+            .End();
+        
+        private ProtoIt _transferFilter= It
+            .Chain<NetworkTransferRequest>()
+            .End();
+        
+        private ProtoIt _networkFilter= It
+            .Chain<NetworkConnectionTypeComponent>()
+            .End();
+        
+        private ProtoItExc _eventFilter= It
+            .Chain<SerializeNetworkEntityRequest>()
+            .Inc<NetworkEventComponent>()
+            .Exc<NetworkSyncComponent>()
+            .End();
+        
+        public void Run()
         {
             foreach (var eventEntity in _eventFilter)
             {
@@ -69,14 +61,14 @@
                 _world.DelEntity(eventEntity);
             }
             
-            var networkEntity = _networkFilter.First();
-            if (networkEntity < 0) return;
+            var networkEntityOk = _networkFilter.First();
+            if (!networkEntityOk.Ok) return;
             
-            ref var connectionComponent = ref _networkAspect.ConnectionType.Get(networkEntity);
+            ref var connectionComponent = ref _networkAspect.ConnectionType.Get(networkEntityOk.Entity);
             if (connectionComponent.IsServer) return;
             
             var transferEntity = _transferFilter.First();
-            if(transferEntity<0) return;
+            if(!transferEntity.Ok) return;
             
             foreach (var entity in _filter)
             {

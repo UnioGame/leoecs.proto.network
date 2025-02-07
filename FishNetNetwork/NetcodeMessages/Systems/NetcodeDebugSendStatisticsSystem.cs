@@ -4,6 +4,8 @@
     using System.Text;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components.Requests;
     using Shared.Aspects;
@@ -28,7 +30,7 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class NetcodeDebugSendStatisticsSystem : IEcsInitSystem, IEcsRunSystem
+    public class NetcodeDebugSendStatisticsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
@@ -37,39 +39,29 @@
         private NetcodeMessageAspect _messageAspect;
         private NetworkMessageAspect _networkMessageAspect;
         
+        private ProtoWorld _world;
         
-        private EcsWorld _world;
+        private ProtoIt _networkFilter= It
+            .Chain<NetcodeManagerComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
+            .End();
         
-        private EcsFilter _networkFilter;
-        private EcsFilter _transferFilter;
+        private ProtoIt _transferFilter= It
+            .Chain<NetworkTransferRequest>()
+            .Inc<NetworkSerializationResult>()
+            .End();
         
         private EcsNetworkSettings _networkData;
         private StringBuilder _stringBuilder = new StringBuilder(512);
-        
 
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-
-            _networkData = _world.GetGlobal<EcsNetworkSettings>();
-            
-            _networkFilter = _world.Filter<NetcodeManagerComponent>()
-                .Inc<NetworkConnectionTypeComponent>()
-                .End();
-            
-            _transferFilter = _world
-                .Filter<NetworkTransferRequest>()
-                .Inc<NetworkSerializationResult>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
             if (!_networkData.enableDebug) return;
             
-            var networkEntity = _networkFilter.First();
-            if (networkEntity < 0) return;
+            var networkEntityOk = _networkFilter.First();
+            if (!networkEntityOk.Ok) return;
             
+            var networkEntity = networkEntityOk.Entity;
             ref var connection = ref _networkAspect.ConnectionType.Get(networkEntity);
             ref var managerComponent = ref _netcodeAspect.Manager.Get(networkEntity);
             ref var networkTime = ref _netcodeAspect.NetworkTime.Get(networkEntity);

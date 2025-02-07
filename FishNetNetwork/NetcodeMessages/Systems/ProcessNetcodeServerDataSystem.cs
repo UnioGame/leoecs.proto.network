@@ -3,6 +3,8 @@
     using System;
     using Aspects;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components;
     using NetworkCommands.Data;
@@ -24,41 +26,33 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class ProcessNetcodeServerDataSystem : IEcsInitSystem, IEcsRunSystem
+    public class ProcessNetcodeServerDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _messageAspect;
         private NetworkMessageAspect _networkMessageAspect;
 
-        private EcsWorld _world;
-        private EcsFilter _receiveFilter;
-        private EcsFilter _networkFilter;
+        private ProtoWorld _world;
+        
+        private ProtoIt _receiveFilter= It
+            .Chain<NetworkReceiveResultComponent>()
+            .End();
+        
+        private ProtoIt _networkFilter= It
+            .Chain<NetworkTimeComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
+            .Inc<NetworkSyncValuesComponent>()
+            .End();
         
         private EcsNetworkData _networkData;
-        
-        public void Init(IEcsSystems systems)
-        {
-            _world = systems.GetWorld();
-            _networkData = _world.GetGlobal<EcsNetworkData>();
 
-            _networkFilter = _world
-                .Filter<NetworkTimeComponent>()
-                .Inc<NetworkConnectionTypeComponent>()
-                .Inc<NetworkSyncValuesComponent>()
-                .End();
-            
-            _receiveFilter = _world
-                .Filter<NetworkReceiveResultComponent>()
-                .End();
-        }
-
-        public void Run(IEcsSystems systems)
+        public void Run()
         {
-            var networkEntity = _networkFilter.First();
-            if (networkEntity < 0) return;
+            var networkEntityOk = _networkFilter.First();
+            if (!networkEntityOk.Ok) return;
             
-            ref var connection = ref _netcodeAspect.ConnectionType.Get(networkEntity);
+            ref var connection = ref _netcodeAspect.ConnectionType.Get(networkEntityOk.Entity);
             if (connection.IsClient) return;
             
             foreach (var entity in _receiveFilter)
@@ -76,7 +70,8 @@
                     if(!entityData.IsValueChanged) continue;
                     
                     var finalComponent = entityData.ComponentIndexAt + entityData.Count;
-                    var newEntity = -1;
+                    var found = false;
+                    ProtoEntity newEntity = default;
                     
                     for (var j = entityData.ComponentIndexAt; j < finalComponent; j++)
                     {
@@ -90,7 +85,9 @@
 
                         var serializer = syncType.serializer;
                         
-                        newEntity = newEntity < 0 ? _world.NewEntity() : newEntity;
+                        newEntity = !found ? _world.NewEntity() : newEntity;
+                        found = true;
+                        
                         serializer.Deserialize(_world, newEntity, ref componentData.Component);
                         ref var senderIdComponent = ref _netcodeAspect.SenderId.GetOrAddComponent(newEntity);
                         senderIdComponent.Value = receivedDataComponent.Sender;

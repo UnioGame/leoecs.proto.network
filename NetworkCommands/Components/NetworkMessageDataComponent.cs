@@ -22,7 +22,7 @@
         //must be temp allocated
         public byte[] Value;
         public int Size;
-        public ulong Sender;
+        public int Sender;
         
         public void AutoReset(ref NetworkMessageDataComponent c)
         {
