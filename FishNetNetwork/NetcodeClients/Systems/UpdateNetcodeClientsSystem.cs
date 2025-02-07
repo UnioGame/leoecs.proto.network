@@ -66,7 +66,7 @@
         public void Run()
         {
             var managerEntityResult = _managerFilter.First();
-            if(managerEntityResult.Ok) return;
+            if(!managerEntityResult.Ok) return;
 
             var managerEntity = managerEntityResult.Entity;
             ref var managerComponent = ref _netcodeAspect.Manager.Get(managerEntity);
