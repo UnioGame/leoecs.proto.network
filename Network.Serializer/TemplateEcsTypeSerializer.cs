@@ -9,7 +9,11 @@ namespace Game.Ecs.Network.Shared.Data
     using Game.Ecs.Network.Network.Serializer;
     using Leopotam.EcsProto;
     using UniGame.LeoEcs.Shared.Extensions;
-
+            
+#if ENABLE_MEMORY_PACK    
+    using MemoryPack;
+#endif
+    
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
 #endif
@@ -27,10 +31,7 @@ namespace Game.Ecs.Network.Shared.Data
     public class TemplateEcsTypeSerializer : IEcsTypeSerializer
     {
         public static readonly Type TemplateType = typeof(TemplateSerializeType);
-        
-#if ENABLE_MEMORY_PACK    
-    using MemoryPack;
-#endif
+
         
 #if ENABLE_IL2CPP
         [Il2CppSetOption(Option.NullChecks, false)]
