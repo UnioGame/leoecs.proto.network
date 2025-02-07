@@ -1,5 +1,5 @@
 {
-    "name": "unigame.network.testing.runtime",
+    "name": "game.network.fishnet.examples",
     "rootNamespace": "",
     "references": [
         "GUID:e0cd26848372d4e5c891c569017e11f1",
@@ -13,7 +13,9 @@
         "GUID:a03aa6f4c1e44271b68c4b8d9bd02ffe",
         "GUID:7ed0561e138c428fa4f7e2e1a7de6b18",
         "GUID:e59bf9fc7d5a44b18a819a92edd46163",
-        "GUID:45a3b17f0ffe8cc49a35ffa34f7c4075"
+        "GUID:45a3b17f0ffe8cc49a35ffa34f7c4075",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:7c88a4a7926ee5145ad2dfa06f454c67"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

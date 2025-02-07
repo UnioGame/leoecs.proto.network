@@ -5,6 +5,7 @@ namespace Game.Ecs.Network.Network.Tests
     using System;
     using System.Buffers;
     using System.Runtime.CompilerServices;
+    using FishNet.Managing;
     using NetworkCommands.Data;
     using Serializer;
     using Shared.Data;
@@ -20,6 +21,11 @@ namespace Game.Ecs.Network.Network.Tests
 
     public class MonoNetworkTestActions : MonoBehaviour
     {
+        public NetworkManager networkManager;
+
+        public string address = "localhost";
+        public ushort port = 10542;
+        
         public int testAmount = 1000;
         public bool activate1Action = false;
         public bool activateComputeHash = false;
@@ -38,10 +44,15 @@ namespace Game.Ecs.Network.Network.Tests
             
         }
 
+        public void SetServerData(string address, ushort port)
+        {
+            this.address = address;
+            this.port = port;
+        }
+
         [Button]
         public void StartServer()
         {
-            
         }
 
         [Button]
