@@ -4,8 +4,10 @@
     using Components;
     using Components.Events;
     using Components.Requests;
-    using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UnityNetcode.Componenets.Requests;
+    using UnityNetcode.Components;
 
     /// <summary>
     /// shared network aspect
@@ -20,26 +22,31 @@
     [Serializable]
     public class NetworkAspect : EcsAspect
     {
-        public EcsPool<NetworkLinkComponent> NetworkLink;
-        public EcsPool<NetworkSourceComponent> NetworkAgent;
-        public EcsPool<NetworkAddressComponent> Address;
-        public EcsPool<NetworkConnectionTypeComponent> ConnectionType;
+        public ProtoPool<NetworkLinkComponent> NetworkLink;
+        public ProtoPool<NetworkSourceComponent> NetworkSource;
+        public ProtoPool<NetworkAddressComponent> Address;
+        public ProtoPool<NetcodeStatusComponent> Status;
+        public ProtoPool<NetcodeAgentComponent> NetworkAgent;
+        
+        public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
+        public ProtoPool<EcsNetworkConnectionInfoComponent> ConnectionInfo;
         
         //netcode runtime info
         //public EcsPool<NetworkActiveComponent> Active;
         
         //server time
-        public EcsPool<NetworkTimeComponent> NetworkTime;
+        public ProtoPool<NetworkTimeComponent> NetworkTime;
         
         //requests
+        public ProtoPool<InitializeNetcodeSelfRequest> InitializeNetcode;
         
         // create new host
-        public EcsPool<StartNetworkSelfRequest> StartNetwork;
-        public EcsPool<StopNetworkSelfRequest> StopNetwork;
+        public ProtoPool<StartNetworkSelfRequest> StartNetwork;
+        public ProtoPool<StopNetworkSelfRequest> StopNetwork;
 
         /// <summary>
         /// server connected event
         /// </summary>
-        public EcsPool<NetworkServerConnectedSelfEvent> ServerConnected;
+        public ProtoPool<NetworkServerConnectedSelfEvent> ServerConnected;
     }
 }

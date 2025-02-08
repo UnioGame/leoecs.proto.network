@@ -24,7 +24,7 @@
         public EcsPool<NetcodeManagerComponent> Manager;
         public EcsPool<FishNetClientManagerComponent> ClientManager;
         public EcsPool<NetcodeSharedRPCComponent> RPCAsset;
-        public EcsPool<FishNetTransportComponent> Transport;
+        public EcsPool<EcsNetworkConnectionInfoComponent> Transport;
         public EcsPool<FishNetServerManagerComponent> ServerManager;
         public EcsPool<LifeTimeComponent> LifeTime;
         public EcsPool<NetworkTimeComponent> NetworkTime;

@@ -34,9 +34,8 @@
         {
             ref var networkTime = ref world.GetOrAddComponent<NetworkTimeComponent>(entity);
             ref var networkManagerComponent = ref world.GetOrAddComponent<NetcodeManagerComponent>(entity);
-            ref var netcodeAgentComponent = ref world.GetOrAddComponent<NetcodeAgentComponent>(entity);
             ref var netcodeStatusComponent = ref world.GetOrAddComponent<NetcodeStatusComponent>(entity);
-            ref var unityTransportComponent = ref world.GetOrAddComponent<FishNetTransportComponent>(entity);
+            ref var unityTransportComponent = ref world.GetOrAddComponent<EcsNetworkConnectionInfoComponent>(entity);
             ref var targetComponent = ref world.GetOrAddComponent<NetcodeSharedRPCComponent>(entity);
             ref var networkSourceComponent = ref world.GetOrAddComponent<NetworkSourceComponent>(entity);
             ref var connectionTypeComponent = ref world.GetOrAddComponent<NetworkConnectionTypeComponent>(entity);

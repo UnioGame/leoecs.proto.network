@@ -1,7 +1,6 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
-    using Aspects;
     using Componenets.Requests;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
@@ -28,7 +27,6 @@
     public class StartNetcodeServerSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         
         private ProtoWorld _world;
         
@@ -57,19 +55,18 @@
                     continue;
 
                 var netcodeEntity = netcodeEntityResult.Entity;
-                ref var managerComponent = ref _netcodeAspect.Manager.Get(netcodeEntity);
-                ref var transportComponent = ref _netcodeAspect.Transport.Get(netcodeEntity);
+                ref var networkSource = ref _networkAspect.NetworkSource.Get(netcodeEntity);
+                ref var connectionInfoComponent = ref _networkAspect.ConnectionInfo.Get(netcodeEntity);
 
-                var manager = managerComponent.Value;
-                var transport = transportComponent.Value;
+                var manager = networkSource.Value;
+                var transport = connectionInfoComponent.Value;
                 
                 if(manager.IsServerStarted || manager.IsHostStarted) continue;
 
-                var serverManager = manager.ServerManager;
                 transport.Address = address;
-                transport.Port = (ushort)port;
+                transport.Port = port;
                 //start server
-                var connected = serverManager.StartConnection(port);
+                var connected = manager.StartServer(port);
                     
                 if(!connected)
                 {

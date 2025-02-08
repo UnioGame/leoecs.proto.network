@@ -2,11 +2,8 @@
 {
     using System;
     using Cysharp.Threading.Tasks;
-    using Data;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
-    using NetcodeClients;
-    using NetcodeMessages;
     using NetworkCommands.Data;
     using Profiler;
     using Shared.Components.Events;
@@ -19,34 +16,31 @@
     using UnityEngine;
     using UnityEngine.AddressableAssets;
 
-    [CreateAssetMenu(menuName = "Game/Feature/Network/Netcode Feature", fileName = "Netcode Feature")]
-    public class NetcodeFeature : BaseLeoEcsFeature
+    [CreateAssetMenu(menuName = "ECS Proto/Features/Network/Netcode Feature",fileName = "Network Feature")]
+    public class NetworkProtoFeature : BaseLeoEcsFeature
     {
-        public AssetReferenceT<UnityNetcodeSettingsAsset> netcodeSettings;
         public AssetReferenceT<EcsNetworkSettingsAsset> networkSettings;
         
         public NetworkEcsProfilerFeature profilerFeature = new();
-        public NetcodeClientsFeature clientsFeature = new();
-        public NetcodeMessagingFeature messagingFeature = new();
+        
+        [SerializeReference]
+        public IEcsNetworkModuleFeature[] networkModules = Array.Empty<IEcsNetworkModuleFeature>();
         
         public sealed override async UniTask InitializeAsync(IProtoSystems ecsSystems)
         {
             var world = ecsSystems.GetWorld();
             var lifeTime = world.GetWorldLifeTime();
 
-#if ENABLE_ECS_DEBUG
-            await profilerFeature.InitializeFeatureAsync(ecsSystems);
-#endif
-            
-            var netcodeData = await netcodeSettings
-                .LoadAssetInstanceTaskAsync(lifeTime, true);
-            
             var settingsAsset = await networkSettings
                 .LoadAssetInstanceTaskAsync(lifeTime, true);
             
             var settings = settingsAsset.networkSettings;
             var networkData = settings.networkData;
             var typesCount = networkData.networkTypes.Length;
+            
+            //enable network profiler if activated in settings
+            if(settings.enableProfiler)
+                await profilerFeature.InitializeAsync(ecsSystems);
             
             var ecsNetworkData = new EcsNetworkData()
             {
@@ -77,9 +71,8 @@
             
             //set global settings of network configuration
             world.SetGlobal(ecsNetworkData);
-            world.SetGlobal(netcodeData.settings);
+            world.SetGlobal(settingsAsset.assetsSettings);
             world.SetGlobal(settings);
-            world.SetGlobal(netcodeData);
             world.SetGlobal(networkData);
             
             //if get request to start network and netcode not initialized - start netcode
@@ -89,23 +82,24 @@
 
             //remove server connected event
             ecsSystems.DelHere<NetworkServerConnectedSelfEvent>();
+            
             //start netcode server and fire server connected if success
             ecsSystems.Add(new StartNetcodeServerSystem());
             //stop netcode server
             ecsSystems.Add(new StopNetcodeSystem());
-            
             ecsSystems.Add(new UpdateNetcodeStatusSystem());
             ecsSystems.Add(new UpdateNetcodeTimeSystem());
             
-            //additional feature for clients
-            await clientsFeature.InitializeAsync(ecsSystems);
-            //register rpc commands
-            await messagingFeature.InitializeAsync(ecsSystems);
-   
+            //send rpc commands
+            ecsSystems.Add(new SendCommonRPCSystem());
+            
+            foreach (var moduleFeature in networkModules)
+            {
+                await moduleFeature.InitializeAsync(ecsSystems);
+            }
             
             //remove stop request
             ecsSystems.DelHere<StopNetworkSelfRequest>();
-            //ecsSystems.DelHere<StartNetworkSelfRequest>();
         }
     }
 

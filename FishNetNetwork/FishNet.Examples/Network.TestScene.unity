@@ -362,6 +362,16 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3923400502193494020, guid: 48fbad2187536a849913816ad46a393f,
+        type: 3}
+      propertyPath: <SceneId>k__BackingField
+      value: 3720305659
+      objectReference: {fileID: 0}
+    - target: {fileID: 3923400502193494020, guid: 48fbad2187536a849913816ad46a393f,
+        type: 3}
+      propertyPath: <AssetPathHash>k__BackingField
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4303986677582349063, guid: 48fbad2187536a849913816ad46a393f,
         type: 3}
       propertyPath: m_AnchorMax.y

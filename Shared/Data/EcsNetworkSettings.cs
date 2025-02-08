@@ -14,6 +14,7 @@
         public const string CommonSettings = "common settings";
         
         public bool enableDebug = false;
+        public bool enableProfiler = false;
      
         [TitleGroup(ServerSettings)]
         public string serverAddress = "127.0.0.1";

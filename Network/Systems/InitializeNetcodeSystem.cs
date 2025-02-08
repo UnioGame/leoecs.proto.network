@@ -1,7 +1,6 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
-    using Aspects;
     using Componenets.Requests;
     using Cysharp.Threading.Tasks;
     using Data;
@@ -30,7 +29,6 @@
     public class InitializeNetcodeSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         
         private ProtoWorld _world;
         
@@ -42,7 +40,7 @@
             .Chain<NetworkSourceComponent>()
             .End();
         
-        private UnityNetcodeSettings _netcodeSettings;
+        private NetworkAssetsSettings _netcodeSettings;
         private bool _isLoading;
 
         public void Run()
@@ -53,7 +51,7 @@
             {
                 if (isExists.Ok)
                 {
-                    _netcodeAspect.InitializeSelf.Del(entity);
+                    _networkAspect.InitializeNetcode.Del(entity);
                     continue;
                 }
 
@@ -61,15 +59,22 @@
                 if (_isLoading) continue;
                 
                 _isLoading = true;
-                LoadNetcodeAgent().Forget();
+
+                foreach (var networkAsset in _netcodeSettings.networkPrefabs)
+                {
+                    LoadNetcodeAgent(networkAsset).Forget();
+                }
+                
             }
         }
 
-        private async UniTask LoadNetcodeAgent()
+        private async UniTask LoadNetcodeAgent(EcsNetworkAsset networkAsset)
         {
-            var agentSource = _netcodeSettings.networkPrefab;
-            var agent = await agentSource.LoadAssetInstanceTaskAsync(_world.GetWorldLifeTime(), true);
-            Object.DontDestroyOnLoad(agent);
+            var agentSource = networkAsset.asset;
+            var agent = await agentSource
+                .LoadAssetInstanceTaskAsync(_world.GetWorldLifeTime(), true);
+            if(networkAsset.immortal)
+                Object.DontDestroyOnLoad(agent);
         }
     }
 }

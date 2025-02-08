@@ -1,7 +1,6 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
-    using Aspects;
     using Componenets.Requests;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
@@ -12,7 +11,7 @@
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
     /// <summary>
-    /// if get request to start network and netcode not initialized - start netcode
+    /// send rpc with base rpc source
     /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -23,10 +22,9 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class StartNetcodeOnNonInitializedSystem : IEcsRunSystem
+    public class SendCommonRPCSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         
         private ProtoWorld _world;
         
@@ -43,12 +41,9 @@
 
         public void Run()
         {
-            foreach (var startEntity in _filter)
+            foreach (var netcodeEntity in _netFilter)
             {
-                var isExistsResult = _netFilter.First();
-                if (isExistsResult.Ok) continue;
-                
-                _netcodeAspect.InitializeSelf.Add(startEntity);
+                ref var managerComponent = ref _networkAspect.NetworkSource.Get(netcodeEntity);
             }
         }
 

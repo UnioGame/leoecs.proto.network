@@ -7,7 +7,7 @@
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
-    using NetworkCommands.Components.Requests;
+    using NetworkCommands.Components;
     using Shared.Aspects;
     using Shared.Components;
     using Shared.Data;
@@ -30,33 +30,34 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class NetcodeDebugSendStatisticsSystem : IEcsRunSystem
+    public class NetcodeDebugStatisticsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
-        
         private NetworkSyncAspect _networkSyncAspect;
         private NetcodeMessageAspect _messageAspect;
         private NetworkMessageAspect _networkMessageAspect;
         
         private ProtoWorld _world;
+        private EcsNetworkSettings _networkData;
+        private StringBuilder _stringBuilder = new StringBuilder(512);
+        
+        private ProtoIt _receiveFilter= It
+            .Chain<NetworkReceiveResultComponent>()
+            .End();
         
         private ProtoIt _networkFilter= It
             .Chain<NetcodeManagerComponent>()
             .Inc<NetworkConnectionTypeComponent>()
             .End();
         
-        private ProtoIt _transferFilter= It
-            .Chain<NetworkTransferRequest>()
-            .Inc<NetworkSerializationResult>()
+        private ProtoIt _messageFilter= It
+            .Chain<NetworkMessageDataComponent>()
             .End();
-        
-        private EcsNetworkSettings _networkData;
-        private StringBuilder _stringBuilder = new StringBuilder(512);
 
         public void Run()
         {
-            if (!_networkData.enableDebug) return;
+            if (!_networkData.enableProfiler) return;
             
             var networkEntityOk = _networkFilter.First();
             if (!networkEntityOk.Ok) return;
@@ -64,23 +65,44 @@
             var networkEntity = networkEntityOk.Entity;
             ref var connection = ref _networkAspect.ConnectionType.Get(networkEntity);
             ref var managerComponent = ref _netcodeAspect.Manager.Get(networkEntity);
-            ref var networkTime = ref _netcodeAspect.NetworkTime.Get(networkEntity);
+            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(networkEntity);
             
             if(!connection.IsActive)return;
-
+            
+            
+            if(_receiveFilter.Len() == 0 && _messageFilter.Len() == 0) return;
+            
             _stringBuilder.Clear();
             
-            foreach (var entity in _transferFilter)
+            var tick = timeComponent.Tick;
+            var time = timeComponent.Time;
+
+            _stringBuilder.AppendLine($"RECEIVE DATA: TICK: {tick} NET TIME: {time}");
+    
+            
+            foreach (var entity in _messageFilter)
             {
-                ref var serializationComponent = ref _networkMessageAspect.SerializationResult.Get(entity);
+                ref var messageDataComponent = ref _messageAspect.MessageData.Get(entity);
                 
-                var kb = serializationComponent.Value.Length / 1024f;
+                var bytes = messageDataComponent.Size;
+                var kb = messageDataComponent.Size / 1024f;
                 var mb = kb / 1024f;
                 
-                _stringBuilder.AppendLine($"SEND TICK: {networkTime.Tick} NET TIME: {networkTime.Time} | {kb} KB | {mb} MB");
+                _stringBuilder.AppendLine($"RECEIVE: {bytes} bytes | {kb} KB | {mb} MB");
             }
             
-            GameLog.LogRuntime(_stringBuilder.ToString(),Color.blue);
+            foreach (var entity in _receiveFilter)
+            {
+                ref var receiveResult = ref _networkMessageAspect.ReceiveResult.Get(entity);
+                
+                var bytes = receiveResult.Size;
+                var kb = receiveResult.Size / 1024f;
+                var mb = kb / 1024f;
+                
+                _stringBuilder.AppendLine($"RECEIVE UNPACKED: {bytes} bytes | {kb} KB | {mb} MB | SYNC_COUNT: {receiveResult.Count}");
+            }
+            
+            GameLog.LogRuntime(_stringBuilder.ToString(),Color.yellow);
         }
     }
 }

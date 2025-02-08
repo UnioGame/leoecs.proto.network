@@ -67,8 +67,7 @@
             
             if(!manager.Initialized || !manager.IsServerStarted)return;
 
-            var rpcInstanceObject = _rpcPrefab.gameObject
-                .Spawn()
+            var rpcInstanceObject = _rpcPrefab.Spawn()
                 .DespawnWith(_lifeTime);
             
             var rpcInstance = rpcInstanceObject.GetComponent<NetworkObject>();

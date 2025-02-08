@@ -46,7 +46,7 @@
         private ProtoIt _netFilter= It
             .Chain<NetworkSourceComponent>()
             .Inc<FishNetClientManagerComponent>()
-            .Inc<FishNetTransportComponent>()
+            .Inc<EcsNetworkConnectionInfoComponent>()
             .End();
 
         public void Run()

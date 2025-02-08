@@ -9,6 +9,7 @@
     using UnityEngine;
     using System;
     using UnityCodeGen;
+    using UnityNetcode.Data;
 
 #if UNITY_EDITOR
     using UnityCodeGen;
@@ -23,6 +24,11 @@
         [InlineProperty]
         [SerializeField]
         public EcsNetworkSettings networkSettings;
+        
+        [InlineProperty]
+        [HideLabel]
+        public NetworkAssetsSettings assetsSettings = new();
+        
         
         private Dictionary<Type,bool> cachedTypes = new();
         

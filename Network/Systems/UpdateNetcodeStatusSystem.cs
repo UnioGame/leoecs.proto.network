@@ -1,8 +1,6 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
-    using Aspects;
-    using Components;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -10,7 +8,6 @@
     using Shared.Aspects;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
 
     /// <summary>
     /// initialize netcode data
@@ -27,11 +24,10 @@
     public class UpdateNetcodeStatusSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         
         private ProtoWorld _world;
         private ProtoIt _filter= It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .End();
         
         private ProtoIt _networkLinkFilter= It
@@ -42,16 +38,16 @@
         {
             foreach (var entity in _filter)
             {
-                ref var managerComponent = ref _netcodeAspect.Manager.Get(entity);
+                ref var managerComponent = ref _networkAspect.NetworkSource.Get(entity);
                 var manager = managerComponent.Value;
                 
-                ref var agentComponent = ref _netcodeAspect.Agent.Get(entity);
+                ref var agentComponent = ref _networkAspect.NetworkAgent.Get(entity);
                 ref var connectionTypeComponent = ref _networkAspect.ConnectionType.Get(entity);
                 
                 var isClient = manager.IsClientStarted || manager.IsHostStarted;
                 var isServer = manager.IsServerStarted;
         
-                ref var statusComponent = ref _netcodeAspect.Status.Get(entity);
+                ref var statusComponent = ref _networkAspect.Status.Get(entity);
                 statusComponent.IsConnected = true;
                 statusComponent.Status = ConnectionStatus.Connected;
                 connectionTypeComponent.IsClient = isClient;
@@ -59,7 +55,7 @@
                 connectionTypeComponent.IsHost = manager.IsHostStarted;
                 connectionTypeComponent.IsActive = isClient || isServer;
                 
-                agentComponent.Id = manager.ClientManager.Connection.ClientId;
+                agentComponent.Id = manager.ActiveClientId;
             }
 
         }

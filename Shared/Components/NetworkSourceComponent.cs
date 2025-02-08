@@ -1,6 +1,7 @@
 ﻿namespace Game.Ecs.Network.Shared.Components
 {
     using System;
+    using UnityNetcode;
 
     /// <summary>
     /// pointer to network object
@@ -15,6 +16,6 @@
     [Serializable]
     public struct NetworkSourceComponent
     {
-        
+        public IEcsNetworkManager Value;
     }
 }

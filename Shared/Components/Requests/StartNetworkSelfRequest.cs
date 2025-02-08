@@ -23,7 +23,6 @@
         /// if true, server will be created as a host and allow make server client on his side
         /// overwise server will be only in server mode
         /// </summary>
-        [FormerlySerializedAs("AllowServerClient")]
         public bool AllowHostMode;
     }
 }
