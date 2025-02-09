@@ -35,7 +35,7 @@
         private static int _idCounter = 0;
         private static int _clientIdCounter = -1;
         
-        public NetworkMessageAspect messageAspect;
+        public NetworkCommandsAspect messageAspect;
         public NetworkAspect networkAspect;
         
         public ProtoWorld world;

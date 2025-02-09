@@ -12,9 +12,6 @@
     using Shared.Components;
     using Shared.Data;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -31,8 +28,7 @@
     public class ValidateTickNetworkSerializationSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
-        private NetworkMessageAspect _messageAspect;
+        private NetworkCommandsAspect _messageAspect;
         
         private ProtoWorld _world;
         
@@ -41,7 +37,7 @@
             .End();
         
         private ProtoIt _netcodeFilter = It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkConnectionTypeComponent>()
             .Inc<NetworkTimeComponent>()
             .End();
@@ -69,9 +65,9 @@
             if(!historyEntityOk.Ok) return;
 
             var targetEntity = netcodeEntityOk.Entity;
-            ref var connectionType = ref _netcodeAspect.ConnectionType.Get(targetEntity);
+            ref var connectionType = ref _networkAspect.ConnectionType.Get(targetEntity);
             ref var historyComponent = ref _messageAspect.History.Get(targetEntity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(targetEntity);
+            ref var timeComponent = ref _networkAspect.NetworkTime.Get(targetEntity);
             
             var time = timeComponent.Time;
             var tick = timeComponent.Tick;

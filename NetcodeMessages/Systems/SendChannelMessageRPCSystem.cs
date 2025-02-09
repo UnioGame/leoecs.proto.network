@@ -30,7 +30,7 @@
     {
         private NetworkAspect _networkAspect;
         private NetcodeMessageAspect _rpcAspect;
-        private NetworkMessageAspect _messageAspect;
+        private NetworkCommandsAspect _messageAspect;
         
         private ProtoWorld _world;
         
@@ -39,7 +39,7 @@
             .End();
         
         private ProtoIt _managerFilter = It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetcodeStatusComponent>()
             .End();
         
         private ProtoIt _requestFilter= It
@@ -53,7 +53,10 @@
                 ref var request = ref _messageAspect.SendMessage.Get(requestEntity);
                 var channelEntity = _managerFilter.First();
                 
-                if(!channelEntity.Ok) continue;
+                if(!channelEntity.Ok ) continue;
+                
+                ref var status = ref _networkAspect.Status.Get(channelEntity.Entity);
+                if(!status.IsConnected) continue;
                 
                 ref var channel = ref _rpcAspect.Channel.Get(channelEntity.Entity);
                 

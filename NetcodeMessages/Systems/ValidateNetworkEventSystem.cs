@@ -9,8 +9,6 @@
     using NetworkCommands.Components.Requests;
     using Shared.Aspects;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
-    using UnityNetcode.Aspects;
 
     /// <summary>
     /// send message with base rpc channel
@@ -27,8 +25,7 @@
     public class ValidateNetworkEventSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
         
         private ProtoWorld _world;
         

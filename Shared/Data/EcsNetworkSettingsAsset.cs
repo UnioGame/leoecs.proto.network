@@ -17,7 +17,7 @@
     using UniModules.Editor;
 #endif
     
-    [CreateAssetMenu(menuName = "Game/Configurations/Network Settings", fileName = "Network Settings")]
+    [CreateAssetMenu(menuName = "ECS Proto/Features/Network/Network Settings", fileName = "Network Settings")]
     public class EcsNetworkSettingsAsset : ScriptableObject
     {
         [HideLabel]

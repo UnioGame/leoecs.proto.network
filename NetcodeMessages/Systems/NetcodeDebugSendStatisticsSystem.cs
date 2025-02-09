@@ -13,10 +13,7 @@
     using Shared.Data;
     using UniCore.Runtime.ProfilerTools;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
     using UnityEngine;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -33,16 +30,15 @@
     public class NetcodeDebugSendStatisticsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         
         private NetworkSyncAspect _networkSyncAspect;
         private NetcodeMessageAspect _messageAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
         
         private ProtoWorld _world;
         
         private ProtoIt _networkFilter= It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkConnectionTypeComponent>()
             .End();
         
@@ -63,7 +59,7 @@
             
             var networkEntity = networkEntityOk.Entity;
             ref var connection = ref _networkAspect.ConnectionType.Get(networkEntity);
-            ref var networkTime = ref _netcodeAspect.NetworkTime.Get(networkEntity);
+            ref var networkTime = ref _networkAspect.NetworkTime.Get(networkEntity);
             
             if(!connection.IsActive)return;
 

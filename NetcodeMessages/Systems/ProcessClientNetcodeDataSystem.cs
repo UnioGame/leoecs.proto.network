@@ -13,7 +13,6 @@
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
     using Unity.Collections;
-    using UnityNetcode.Aspects;
 
     /// <summary>
     /// send message with base rpc channel
@@ -30,9 +29,8 @@
     public class ProcessClientNetcodeDataSystem : IEcsRunSystem, IEcsDestroySystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _messageAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
 
         private ProtoWorld _world;
         private EcsNetworkData _networkData;
@@ -67,7 +65,7 @@
             if (!networkEntity.Ok) return;
             
             //process only data coming from server
-            ref var connection = ref _netcodeAspect.ConnectionType.Get(networkEntity.Entity);
+            ref var connection = ref _networkAspect.ConnectionType.Get(networkEntity.Entity);
             ref var syncValuesComponent = ref _messageAspect.SyncValues.Get(networkEntity.Entity);
             
             if(!connection.IsClient) return;
@@ -128,7 +126,7 @@
                         
                         var serializer = componentDesc.serializer;
                         serializer.Deserialize(_world, targetEntity, ref componentData.Component);
-                        ref var senderIdComponent = ref _netcodeAspect.SenderId.GetOrAddComponent(targetEntity);
+                        ref var senderIdComponent = ref _networkMessageAspect.SenderId.GetOrAddComponent(targetEntity);
                         senderIdComponent.Value = receivedComponent.Sender;
                     }
                 }

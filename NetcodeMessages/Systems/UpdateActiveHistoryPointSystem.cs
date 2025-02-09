@@ -10,9 +10,6 @@
     using Shared.Aspects;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -29,13 +26,12 @@
     public sealed class UpdateActiveHistoryPointSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _rpcAspect;
 
         private ProtoWorld _world;
 
         private ProtoIt _netcodeFilter= It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkTimeComponent>()
             .End();
         
@@ -56,7 +52,7 @@
 
             _historyEntity = historyEntityOk.Entity;
             ref var historyComponent = ref _rpcAspect.History.Get(_historyEntity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntityOk.Entity);
+            ref var timeComponent = ref _networkAspect.NetworkTime.Get(netcodeEntityOk.Entity);
 
             var time = timeComponent.Time;
             var tick = (int)timeComponent.Tick;

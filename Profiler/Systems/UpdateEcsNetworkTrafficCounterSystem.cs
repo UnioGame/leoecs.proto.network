@@ -25,7 +25,7 @@
         private ProtoWorld _world;
         private EcsFilter _sendFilter;
 
-        private NetworkMessageAspect _messageAspect;
+        private NetworkCommandsAspect _messageAspect;
 
         public void Init(IProtoSystems systems)
         {

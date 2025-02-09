@@ -4,6 +4,7 @@
     using Cysharp.Threading.Tasks;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
+    using NetcodeMessages;
     using NetworkCommands.Data;
     using Profiler;
     using Shared.Components.Events;
@@ -13,8 +14,19 @@
     using UniGame.AddressableTools.Runtime;
     using UniGame.LeoEcs.Bootstrap.Runtime;
     using UniGame.LeoEcs.Shared.Extensions;
+    using UniModules;
     using UnityEngine;
     using UnityEngine.AddressableAssets;
+
+#if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;
+#endif
+    
+#if UNITY_EDITOR
+    using UnityEditor;
+    using UniModules.Editor;
+    using UniModules.UniGame.AddressableExtensions.Editor;
+#endif
 
     [CreateAssetMenu(menuName = "ECS Proto/Features/Network/Netcode Feature",fileName = "Network Feature")]
     public class NetworkProtoFeature : BaseLeoEcsFeature
@@ -22,6 +34,7 @@
         public AssetReferenceT<EcsNetworkSettingsAsset> networkSettings;
         
         public NetworkEcsProfilerFeature profilerFeature = new();
+        public NetcodeMessagingFeature messagingFeature = new();
         
         [SerializeReference]
         public IEcsNetworkModuleFeature[] networkModules = Array.Empty<IEcsNetworkModuleFeature>();
@@ -97,10 +110,46 @@
             {
                 await moduleFeature.InitializeAsync(ecsSystems);
             }
+
+            await messagingFeature.InitializeAsync(ecsSystems);
             
             //remove stop request
             ecsSystems.DelHere<StopNetworkSelfRequest>();
         }
+
+#if UNITY_EDITOR
+
+#if ODIN_INSPECTOR
+        [OnInspectorInit]
+#endif
+        private void ValidateFeature()
+        {
+            var settingsExists = networkSettings != null && networkSettings.editorAsset != null;
+
+            if (!settingsExists)
+            {
+                var settingsAsset = CreateInstance<EcsNetworkSettingsAsset>();
+                var path = AssetDatabase.GetAssetPath(this);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var settingsPath = path.GetDirectoryPath().CombinePath("NetworkSettings.asset");
+                    AssetDatabase.CreateAsset(settingsAsset,settingsPath);
+                    AssetDatabase.Refresh();
+                    settingsAsset = AssetDatabase.LoadAssetAtPath<EcsNetworkSettingsAsset>(settingsPath);
+                    settingsAsset.AddToDefaultAddressableGroup();
+                    settingsAsset.MarkDirty();
+                    var guid = settingsAsset.GetGUID();
+                    networkSettings = new AssetReferenceT<EcsNetworkSettingsAsset>(guid);
+                    this.MarkDirty();
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                }
+            }
+            
+        }
+
+#endif
+        
     }
 
 }

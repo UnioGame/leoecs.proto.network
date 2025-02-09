@@ -29,7 +29,7 @@
         private NetworkAspect _networkAspect;
         private NetworkSyncAspect _networkSyncAspect;
         private NetcodeMessageAspect _messageAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
         
         private ProtoWorld _world;
 

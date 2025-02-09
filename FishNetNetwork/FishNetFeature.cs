@@ -15,16 +15,11 @@
     public class FishNetFeature : EcsNetworkModuleFeature
     {
         public NetcodeClientsFeature clientsFeature = new();
-        public NetcodeMessagingFeature messagingFeature = new();
         
         protected sealed override async UniTask OnInitializeAsync(IProtoSystems ecsSystems)
         {
             //additional feature for clients
             await clientsFeature.InitializeAsync(ecsSystems);
-            //register rpc commands
-            await messagingFeature.InitializeAsync(ecsSystems);
-            
-            
             //ecsSystems.DelHere<StartNetworkSelfRequest>();
         }
     }

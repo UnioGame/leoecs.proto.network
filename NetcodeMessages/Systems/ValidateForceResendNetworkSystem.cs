@@ -23,7 +23,7 @@
     [ECSDI]
     public class ValidateForceResendNetworkSystem : IEcsRunSystem
     {
-        private NetworkMessageAspect _messageAspect;
+        private NetworkCommandsAspect _messageAspect;
         
         private ProtoWorld _world;
         

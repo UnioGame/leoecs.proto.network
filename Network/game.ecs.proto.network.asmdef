@@ -25,7 +25,12 @@
         "GUID:bd4ea46f2fdce47f0a34f0df46c013f5",
         "GUID:0b7f3532c915c1a4da89f5b7d0b0e472",
         "GUID:b850c1e47c6449b79041b4a49f52cac4",
-        "GUID:86431d8ced25fb34b879e0be61257ef9"
+        "GUID:86431d8ced25fb34b879e0be61257ef9",
+        "GUID:07c1f8771f3f42048261d9663d5ec56a",
+        "GUID:6cf219c1b8612014a948ff3571a01aac",
+        "GUID:2796129a6c23eb84a8181f62bf7332f1",
+        "GUID:b48f2927b162c3a43ab9ec6fa8165d4e",
+        "GUID:69448af7b92c7f342b298e06a37122aa"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -33,6 +38,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
+    "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
 }

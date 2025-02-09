@@ -15,9 +15,6 @@
     using Shared.Components;
     using Shared.Data;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -34,8 +31,7 @@
     public class SendNetworkDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private NetworkMessageAspect _networkMessageAspect;
-        private FishNetAspect _netcodeAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
         private NetcodeMessageAspect _messageAspect;
         
         private ProtoWorld _world;
@@ -43,7 +39,7 @@
         private object[] _components;
 
         private ProtoIt _netcodeFilter= It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkTimeComponent>()
             .End();
 

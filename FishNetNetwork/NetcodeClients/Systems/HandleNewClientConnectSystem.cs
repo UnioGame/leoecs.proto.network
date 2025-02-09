@@ -27,7 +27,7 @@
         private ProtoWorld _world;
 
         private NetworkClientAspect _clientAspect;
-        private NetworkMessageAspect _networkMessage;
+        private NetworkCommandsAspect _networkMessage;
         
         private ProtoIt _filter = It
             .Chain<NetworkClientConnectedSelfEvent>()

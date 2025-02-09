@@ -9,6 +9,7 @@
     using Shared.Components;
     using Shared.Components.Requests;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UnityNetcode.Components;
 
     /// <summary>
     /// rpc aspect
@@ -21,7 +22,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public class NetworkMessageAspect : EcsAspect
+    public class NetworkCommandsAspect : EcsAspect
     {
         public ProtoPool<NetworkMessageChannelSource> Source;
         public ProtoPool<NetworkIdComponent> NetworkId;
@@ -32,7 +33,7 @@
         public ProtoPool<NetworkSyncComponent> ServerEntity;
         public ProtoPool<NetworkReceiveResultComponent> ReceiveResult;
         public ProtoPool<NetworkEventComponent> NetworkEvent;
-        
+        public ProtoPool<NetcodeMessageSenderId> SenderId;
         // === requests ===
         
         //request to remove entity from network

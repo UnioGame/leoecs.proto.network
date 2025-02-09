@@ -13,8 +13,6 @@
     using Shared.Aspects;
     using Shared.Data;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
-    using UnityNetcode.Aspects;
 
     /// <summary>
     /// send message with base rpc channel
@@ -31,9 +29,8 @@
     public class CompressNetworkDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _netcodeMessageAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
 
         private ProtoWorld _world;
 

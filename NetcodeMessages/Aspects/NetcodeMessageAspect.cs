@@ -3,9 +3,11 @@
     using System;
     using Components;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using NetworkCommands.Components;
     using NetworkCommands.Components.Requests;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UnityNetcode.Components;
 
     /// <summary>
     /// netcode rpc aspect
@@ -20,28 +22,29 @@
     [Serializable]
     public class NetcodeMessageAspect : EcsAspect
     {
-        public EcsPool<NetworkMessageChannelSource> Source;
-        public EcsPool<NetcodeMessageChannelComponent> Channel;
-        public EcsPool<NetworkSerializationResult> SerializationResult;
-        public EcsPool<NetworkSyncComponent> ServerEntity;
-        public EcsPool<ReceivedMessageComponent> ReceivedMessage;
+        public ProtoPool<NetworkMessageChannelSource> Source;
+        public ProtoPool<NetcodeMessageChannelComponent> Channel;
+        public ProtoPool<NetworkSerializationResult> SerializationResult;
+        public ProtoPool<NetworkSyncComponent> ServerEntity;
+        public ProtoPool<ReceivedMessageComponent> ReceivedMessage;
+        public ProtoPool<NetcodeMessageSenderId> SenderId;
         
         /// <summary>
         /// history of sync values during several ticks
         /// </summary>
-        public EcsPool<NetworkHistoryComponent> History;
+        public ProtoPool<NetworkHistoryComponent> History;
         
         /// <summary>
         /// network value id
         /// </summary>
-        public EcsPool<NetworkSyncValuesComponent> SyncValues;
+        public ProtoPool<NetworkSyncValuesComponent> SyncValues;
         
         //data to receive
-        public EcsPool<NetworkMessageDataComponent> MessageData;
+        public ProtoPool<NetworkMessageDataComponent> MessageData;
         
         //=== requests ===
         
         //request to serialize current ecs data to history
-        public EcsPool<NetworkSerializeRequest> Serialize;
+        public ProtoPool<NetworkSerializeRequest> Serialize;
     }
 }

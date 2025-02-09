@@ -3,7 +3,6 @@
     using System;
     using Aspects;
     using EcsThreads.Systems;
-    using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
     using Network.Serializer;
@@ -18,8 +17,6 @@
     using UniGame.LeoEcs.Shared.Extensions;
     using Unity.Collections;
     using Unity.Mathematics;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -37,9 +34,8 @@
         : EcsDataTaskSystem<EcsSerializationTask>
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _netcodeMessageAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
         
         private NativeArray<SerializationTaskData> _taskData;
         private NativeArray<EcsEntityNetworkData> _taskResult;
@@ -52,7 +48,7 @@
         private EcsNetworkSettings _networkSettings;
 
         private ProtoIt _netcodeFilter= It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkConnectionTypeComponent>()
             .Inc<NetworkTimeComponent>()
             .End();
@@ -93,7 +89,7 @@
             if (!historyEntityOk.Ok) return default;
 
             ref var historyComponent = ref _netcodeMessageAspect.History.Get(historyEntityOk.Entity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntityOk.Entity);
+            ref var timeComponent = ref _networkAspect.NetworkTime.Get(netcodeEntityOk.Entity);
 
             ref var history = ref historyComponent.History;
             var index = historyComponent.Index;

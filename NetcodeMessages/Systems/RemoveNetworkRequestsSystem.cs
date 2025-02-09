@@ -29,7 +29,7 @@
     public class RemoveNetworkRequestsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private NetworkMessageAspect _messageAspect;
+        private NetworkCommandsAspect _messageAspect;
         private NetcodeMessageAspect _rpcAspect;
         
         private ProtoWorld _world;

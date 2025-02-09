@@ -6,14 +6,14 @@
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
+    using Shared.Aspects;
+    using Shared.Components;
     using Shared.Components.Events;
     using UniGame.Core.Runtime;
     using UniGame.Core.Runtime.Extension;
     using UniGame.LeoEcs.Shared.Extensions;
     using UniGame.Runtime.ObjectPool.Extensions;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// initiaize netcode messaging system
@@ -29,12 +29,13 @@
     [ECSDI]
     public class InitializeNetcodeMessagingSystem : IEcsInitSystem, IEcsRunSystem
     {
+        private NetworkAspect _networkAspect;
         private NetworkObject _rpcPrefab;
-        private FishNetAspect _netcodeAspect;
         private ILifeTime _lifeTime;
         private ProtoWorld _world;
         
-        private ProtoIt _filter = It.Chain<NetcodeManagerComponent>()
+        private ProtoIt _filter = It
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkServerConnectedSelfEvent>()
             .End();
         
@@ -62,10 +63,10 @@
             if(!first.Ok) return;
 
             var managerEntity = first.Entity;
-            ref var managerComponent = ref _netcodeAspect.Manager.Get(managerEntity);
+            ref var managerComponent = ref _networkAspect.NetworkSource.Get(managerEntity);
             var manager = managerComponent.Value;
             
-            if(!manager.Initialized || !manager.IsServerStarted)return;
+            if(!manager.IsInitialized || !manager.IsServerStarted)return;
 
             var rpcInstanceObject = _rpcPrefab.Spawn()
                 .DespawnWith(_lifeTime);

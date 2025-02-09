@@ -15,11 +15,8 @@
     using Shared.Components;
     using Shared.Data;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
     using Unity.Collections;
     using Unity.Collections.LowLevel.Unsafe;
-    using UnityNetcode.Aspects;
-    using UnityNetcode.Components;
 
     /// <summary>
     /// send message with base rpc channel
@@ -36,16 +33,15 @@
     public class SerializeNetworkDataSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private FishNetAspect _netcodeAspect;
         private NetcodeMessageAspect _netcodeMessageAspect;
-        private NetworkMessageAspect _networkMessageAspect;
+        private NetworkCommandsAspect _networkMessageAspect;
 
         private ProtoWorld _world;
 
         private EcsNetworkSettings _networkSettings;
 
         private ProtoIt _netcodeFilter= It
-            .Chain<NetcodeManagerComponent>()
+            .Chain<NetworkSourceComponent>()
             .Inc<NetworkConnectionTypeComponent>()
             .Inc<NetworkTimeComponent>()
             .End();
@@ -83,7 +79,7 @@
             if (!historyEntityOk.Ok) return;
 
             ref var historyComponent = ref _netcodeMessageAspect.History.Get(historyEntityOk.Entity);
-            ref var timeComponent = ref _netcodeAspect.NetworkTime.Get(netcodeEntityOk.Entity);
+            ref var timeComponent = ref _networkAspect.NetworkTime.Get(netcodeEntityOk.Entity);
 
             ref var history = ref historyComponent.History;
             var index = historyComponent.Index;
