@@ -29,8 +29,8 @@
         private ProtoWorld _world;
         
         private ProtoItExc _filter= It
-            .Chain<StartNetworkSelfRequest>()
-            .Exc<InitializeNetcodeSelfRequest>()
+            .Chain<StartServerRequest>()
+            .Exc<InitializeNetcodeRequest>()
             .End();
         
         private ProtoIt _netFilter= It

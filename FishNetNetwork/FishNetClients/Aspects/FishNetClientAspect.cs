@@ -3,8 +3,10 @@
     using System;
     using Components;
     using Leopotam.EcsLite;
+    using Shared.Aspects;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Components;
 
     /// <summary>
@@ -18,8 +20,11 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public class NetcodeClientAspect : EcsAspect
+    [ECSDI]
+    public class FishNetClientAspect : EcsAspect
     {
+        public NetworkClientAspect ClientAspect;
+        
         public EcsPool<GameObjectComponent> GameObject;
         //id of client
         public EcsPool<NetworkClientIdComponent> ClientId;

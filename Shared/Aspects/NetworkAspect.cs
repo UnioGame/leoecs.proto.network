@@ -24,7 +24,6 @@
     [ECSDI]
     public class NetworkAspect : EcsAspect
     {
-        public ProtoPool<NetworkLinkComponent> NetworkLink;
         public ProtoPool<NetworkSourceComponent> NetworkSource;
         public ProtoPool<NetworkAddressComponent> Address;
         public ProtoPool<NetcodeStatusComponent> Status;
@@ -40,11 +39,11 @@
         public ProtoPool<NetworkTimeComponent> NetworkTime;
         
         //requests
-        public ProtoPool<InitializeNetcodeSelfRequest> InitializeNetcode;
+        public ProtoPool<InitializeNetcodeRequest> InitializeNetcode;
         
         // create new host
-        public ProtoPool<StartNetworkSelfRequest> StartNetwork;
-        public ProtoPool<StopNetworkSelfRequest> StopNetwork;
+        public ProtoPool<StartServerRequest> StartNetwork;
+        public ProtoPool<StopServerRequest> StopNetwork;
 
         /// <summary>
         /// server connected event

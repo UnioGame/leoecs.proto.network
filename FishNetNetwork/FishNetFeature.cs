@@ -17,6 +17,7 @@
     public class FishNetFeature : EcsNetworkModuleFeature
     {
         [InlineProperty]
+        [HideLabel]
         public FishNetSettings settings = new();
         
         public NetcodeClientsFeature clientsFeature = new();

@@ -2882,7 +2882,6 @@ MonoBehaviour:
   _componentIndexCache: 0
   _addedNetworkObject: {fileID: 0}
   _networkObjectCache: {fileID: 0}
-  manager: {fileID: 0}
   addressValue: localhost
   portValue: 10425
   server: {fileID: 1262538689794543784}

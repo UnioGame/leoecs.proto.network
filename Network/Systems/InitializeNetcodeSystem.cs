@@ -26,55 +26,37 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class InitializeNetcodeSystem : IEcsRunSystem
+    public class InitializeNetcodeSystem : IEcsRunSystem, IProtoInitSystem
     {
         private NetworkAspect _networkAspect;
+        private NetworkAssetsSettings _netcodeSettings;
         
         private ProtoWorld _world;
+        private IProtoSystems _systems;
         
         private ProtoIt _filter= It
-            .Chain<InitializeNetcodeSelfRequest>()
+            .Chain<InitializeNetcodeRequest>()
             .End();
         
         private ProtoIt _netFilter= It
             .Chain<NetworkSourceComponent>()
             .End();
         
-        private NetworkAssetsSettings _netcodeSettings;
+       
         private bool _isLoading;
 
+        
+        public void Init(IProtoSystems systems)
+        {
+            var lifeTime = _world.GetWorldLifeTime();
+            foreach (var setting in _netcodeSettings.networkSettings)
+                setting.InitializeAsync(_systems, lifeTime).Forget();
+        }
+        
         public void Run()
         {
             var isExists = _netFilter.First();
-            
-            foreach (var entity in _filter)
-            {
-                if (isExists.Ok)
-                {
-                    _networkAspect.InitializeNetcode.Del(entity);
-                    continue;
-                }
-
-                //network object in loading state
-                if (_isLoading) continue;
-                
-                _isLoading = true;
-
-                foreach (var networkAsset in _netcodeSettings.networkPrefabs)
-                {
-                    LoadNetcodeAgent(networkAsset).Forget();
-                }
-                
-            }
         }
 
-        private async UniTask LoadNetcodeAgent(EcsNetworkAsset networkAsset)
-        {
-            var agentSource = networkAsset.asset;
-            var agent = await agentSource
-                .LoadAssetInstanceTaskAsync(_world.GetWorldLifeTime(), true);
-            if(networkAsset.immortal)
-                Object.DontDestroyOnLoad(agent);
-        }
     }
 }

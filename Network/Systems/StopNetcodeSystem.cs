@@ -33,7 +33,7 @@
             .End();
         
         private ProtoIt _filter= It
-            .Chain<StopNetworkSelfRequest>()
+            .Chain<StopServerRequest>()
             .End();
 
         public void Run()

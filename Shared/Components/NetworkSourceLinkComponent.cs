@@ -1,9 +1,11 @@
-﻿namespace Game.Ecs.Network.UnityNetcode.Componenets.Requests
+﻿namespace Game.Ecs.Network.Shared.Components
 {
     using System;
+    using Leopotam.EcsLite;
+    using Leopotam.EcsProto.QoL;
 
     /// <summary>
-    /// initialize new netcode
+    /// link to network object
     /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -13,8 +15,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct InitializeNetcodeSelfRequest
+    public struct NetworkSourceLinkComponent
     {
-        
+        public ProtoPackedEntity Value;
     }
 }

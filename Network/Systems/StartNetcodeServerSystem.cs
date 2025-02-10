@@ -2,6 +2,7 @@
 {
     using System;
     using Componenets.Requests;
+    using Data;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -11,6 +12,7 @@
     using UniCore.Runtime.ProfilerTools;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
+    using UnityEngine;
 
     /// <summary>
     /// initialize netcode data
@@ -27,12 +29,12 @@
     public class StartNetcodeServerSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
+        private NetworkServerAspect _serverAspect;
         
         private ProtoWorld _world;
         
-        private ProtoItExc _filter= It
-            .Chain<StartNetworkSelfRequest>()
-            .Exc<InitializeNetcodeSelfRequest>()
+        private ProtoIt _filter= It
+            .Chain<StartServerRequest>()
             .End();
         
         private ProtoIt _netFilter= It
@@ -43,48 +45,57 @@
 
         public void Run()
         {
-            foreach (var entity in _filter)
+            var netcodeEntityResult = _netFilter.First();
+            if (!netcodeEntityResult.Ok) return;
+            
+            var netcodeEntity = netcodeEntityResult.Entity;
+            ref var networkSource = ref _networkAspect.NetworkSource.Get(netcodeEntity);
+            ref var connectionInfoComponent = ref _networkAspect.ConnectionInfo.Get(netcodeEntity);
+            ref var transport = ref connectionInfoComponent.Value;
+            
+            //server already started
+            var manager = networkSource.Value;
+            if (!manager.IsServerStarted)
             {
+                var startRequestOk = _filter.First();
+                if (!startRequestOk.Ok) return;
+
+                var entity = startRequestOk.Entity;
                 ref var request = ref _networkAspect.StartNetwork.Get(entity);
-                
+
                 var address = request.Address;
                 var port = request.Port;
 
-                var netcodeEntityResult = _netFilter.First();
-                if (!netcodeEntityResult.Ok)
-                    continue;
-
-                var netcodeEntity = netcodeEntityResult.Entity;
-                ref var networkSource = ref _networkAspect.NetworkSource.Get(netcodeEntity);
-                ref var connectionInfoComponent = ref _networkAspect.ConnectionInfo.Get(netcodeEntity);
-
-                var manager = networkSource.Value;
-                var transport = connectionInfoComponent.Value;
-                
-                if(manager.IsServerStarted || manager.IsHostStarted) continue;
-
                 transport.Address = address;
                 transport.Port = port;
+
                 //start server
                 var connected = manager.StartServer(port);
-                    
-                if(!connected)
+
+                if (!connected)
                 {
-                    GameLog.LogError($"Failed to start host for address: {address} | port: {port}");
-                    continue;
+                    var error = string.Format(EcsNetworkMessages.FailedToStartServer, address, port);
+                    GameLog.LogError(error);
+                    return;
                 }
 
+                _serverAspect.Active.Add(netcodeEntity);
+
                 var mode = request.AllowHostMode ? "host mode" : "server mode";
-                GameLog.Log($"Successfully started {mode} for address: {address} | port: {port}");
-                
+                var message = string.Format(EcsNetworkMessages.SuccessStartedServer, mode, address, port);
+                GameLog.LogRuntime(message);
+
+                //fire connected self event notification
                 ref var connectedEvent = ref _networkAspect.ServerConnected.Add(netcodeEntity);
-                
-                var packedNetEntity = _world.PackEntity(netcodeEntity);
-                ref var linkComponent = ref _networkAspect.NetworkLink.GetOrAddComponent(entity);
-                linkComponent.Value = packedNetEntity;
-                
-                _networkAspect.StartNetwork.Del(entity);
             }
+            else
+            {
+                GameLog.LogError(EcsNetworkMessages.ServerAlreadyStarted);
+            }
+
+            //remove all requests
+            foreach (var startEntity in _filter)
+                _networkAspect.StartNetwork.Del(startEntity);
         }
 
         private void ClientConnected_Callback(ulong id)

@@ -97,7 +97,7 @@
         public void Run()
         {
             var entity = _connectionFilter.First();
-            if(entity.Ok) return;
+            if(!entity.Ok) return;
             
             ref var connection = ref networkAspect.ConnectionType.Get(entity.Entity);
             isClient = connection.IsClient;

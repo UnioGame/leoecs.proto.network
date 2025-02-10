@@ -39,6 +39,7 @@
         {
             var lifeTime = _world.GetWorldLifeTime();
             var networkPrefab = await _settings.networkPrefab.LoadAssetInstanceTaskAsync(lifeTime, true);
+            networkPrefab.SetActive(true);
         }
     }
 

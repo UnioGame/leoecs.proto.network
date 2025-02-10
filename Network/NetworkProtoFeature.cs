@@ -1,6 +1,7 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode
 {
     using System;
+    using Componenets.Requests;
     using Cysharp.Threading.Tasks;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -87,12 +88,11 @@
             world.SetGlobal(settingsAsset.assetsSettings);
             world.SetGlobal(settings);
             world.SetGlobal(networkData);
-            
-            //if get request to start network and netcode not initialized - start netcode
-            ecsSystems.Add(new StartNetcodeOnNonInitializedSystem());
+
             //link request entity ot network agent
             ecsSystems.Add(new InitializeNetcodeSystem());
 
+            ecsSystems.DelHere<InitializeNetcodeRequest>();
             //remove server connected event
             ecsSystems.DelHere<NetworkServerConnectedSelfEvent>();
             
@@ -114,7 +114,7 @@
             await messagingFeature.InitializeAsync(ecsSystems);
             
             //remove stop request
-            ecsSystems.DelHere<StopNetworkSelfRequest>();
+            ecsSystems.DelHere<StopServerRequest>();
         }
 
 #if UNITY_EDITOR

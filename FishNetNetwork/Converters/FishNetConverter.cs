@@ -2,6 +2,7 @@
 {
     using System;
     using Components;
+    using Data;
     using FishNet.Managing;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -41,6 +42,9 @@
             ref var connectionTypeComponent = ref world.GetOrAddComponent<NetworkConnectionTypeComponent>(entity);
             ref var syncValuesComponent = ref world.GetOrAddComponent<NetworkSyncValuesComponent>(entity);
             ref var lifeTimeComponent = ref world.GetOrAddComponent<LifeTimeComponent>(entity);
+            
+            var ecsNetworkManager = new FishNetNetworkManager(networkManager);
+            networkSourceComponent.Value = ecsNetworkManager;
             
             networkManagerComponent.Value = networkManager;
             targetComponent.Value = target;

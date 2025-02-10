@@ -29,10 +29,6 @@
         private ProtoIt _filter= It
             .Chain<NetworkSourceComponent>()
             .End();
-        
-        private ProtoIt _networkLinkFilter= It
-            .Chain<NetworkLinkComponent>()
-            .End();
 
         public void Run()
         {

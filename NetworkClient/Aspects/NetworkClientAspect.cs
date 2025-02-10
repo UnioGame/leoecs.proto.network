@@ -28,7 +28,7 @@
         //id of client
         public ProtoPool<NetworkClientIdComponent> ClientId;
         //link to network transport
-        public ProtoPool<NetworkLinkComponent> NetworkLink;
+        public ProtoPool<NetworkSourceLinkComponent> NetworkLink;
         //connection type data
         public ProtoPool<NetworkConnectionTypeComponent> Connection;
         

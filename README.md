@@ -56,3 +56,9 @@ public class EcsNetworkSettingsAsset : ScriptableObject
 1. Create Fishnet Network Manager Prefab
 2. Add ProtoEcsMonoConverter mono behaviour to the prefab
 3. Add FishNetConverter to ProtoEcsMonoConverter serializable converters
+
+
+# Create Custom Network Providers
+
+
+## Implement IEcsNetworkManager interface

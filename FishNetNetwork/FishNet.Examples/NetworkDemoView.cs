@@ -1,15 +1,18 @@
 namespace Game.Modules.leoecs.proto.network.Network.Tests
 {
     using System.Text;
+    using Ecs.Network.Shared.Components.Requests;
     using FishNet.Managing;
     using FishNet.Object;
+    using Leopotam.EcsProto;
     using Sirenix.OdinInspector;
     using TMPro;
+    using UniGame.LeoEcs.Converter.Runtime;
+    using UniGame.LeoEcs.Shared.Extensions;
     using UnityEngine.UI;
 
     public class NetworkDemoView : NetworkBehaviour
     {
-        public NetworkManager manager;
         public string addressValue = "localhost";
         public ushort portValue = 10425;
         
@@ -23,8 +26,10 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
 
         public string networkMessage = "Hello World";
         
+        private NetworkManager manager;
         private StringBuilder _infoBuilder = new StringBuilder(512);
         private bool _isInitialized;
+        private ProtoWorld _world;
         
         private void Start()
         {
@@ -51,7 +56,12 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
         
         public void StartServer()
         {
-            manager.ServerManager.StartConnection(portValue);
+            if(_world == null) return;
+            var requestEntity = _world.NewEntity();
+            ref var startServer = ref _world.AddComponent<StartServerRequest>(requestEntity);
+            startServer.Address = addressValue;
+            startServer.Port = portValue;
+            startServer.AllowHostMode = enableHost.isOn;
         }
         
         public void StartClient()
@@ -79,6 +89,12 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
         
         private void Update()
         {
+            if (_world == null)
+            {
+                _world = LeoEcsGlobalData.World;
+                if (_world == null) return;
+            }
+            
             if (manager == null)
             {
                 manager = FindAnyObjectByType<NetworkManager>();

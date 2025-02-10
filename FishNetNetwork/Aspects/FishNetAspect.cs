@@ -40,6 +40,6 @@
         public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
         //requests
         //initialize netcode and create new entity if not exists
-        public ProtoPool<InitializeNetcodeSelfRequest> InitializeSelf;
+        public ProtoPool<InitializeNetcodeRequest> InitializeSelf;
     }
 }

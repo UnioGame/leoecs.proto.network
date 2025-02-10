@@ -1,9 +1,7 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.NetcodeClients.Systems
 {
     using System;
-    using Aspects;
     using Componenets.Requests;
-    using FishNet.Managing;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -13,9 +11,9 @@
     using UniCore.Runtime.ProfilerTools;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
-    using UnityEngine;
     using UnityNetcode.Aspects;
     using UnityNetcode.Components;
+    using FishNetClientAspect = Aspects.FishNetClientAspect;
 
     /// <summary>
     /// initialize netcode data
@@ -34,13 +32,13 @@
         private NetworkAspect _networkAspect;
         private FishNetAspect _netcodeAspect;
         private NetworkClientAspect _clientAspect;
-        private NetcodeClientAspect _netcodeClientAspect;
+        private FishNetClientAspect _netcodeClientAspect;
         
         private ProtoWorld _world;
         
         private ProtoItExc _filter= It
             .Chain<StartNetworkClientSelfRequest>()
-            .Exc<InitializeNetcodeSelfRequest>()
+            .Exc<InitializeNetcodeRequest>()
             .End();
         
         private ProtoIt _netFilter= It
@@ -95,7 +93,7 @@
                 }
 
                 var packedNetEntity = _world.PackEntity(netcodeEntity);
-                ref var linkComponent = ref _networkAspect.NetworkLink.GetOrAddComponent(entity);
+                ref var linkComponent = ref _clientAspect.NetworkLink.GetOrAddComponent(entity);
                 linkComponent.Value = packedNetEntity;
                 
                 _clientAspect.Connect.Del(entity);

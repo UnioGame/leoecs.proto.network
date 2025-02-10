@@ -1,11 +1,9 @@
-﻿namespace Game.Ecs.Network.Shared.Components
+﻿namespace Game.Modules.leoecs.proto.network.Shared.Components
 {
     using System;
-    using Leopotam.EcsLite;
-    using Leopotam.EcsProto.QoL;
 
     /// <summary>
-    /// link to network object
+    /// mark network server as active
     /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -15,8 +13,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct NetworkLinkComponent
+    public struct NetworkServerActiveComponent
     {
-        public ProtoPackedEntity Value;
+        
     }
 }

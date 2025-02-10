@@ -15,6 +15,7 @@
     using Unity.Collections;
     using UnityNetcode.Aspects;
     using UnityNetcode.Components;
+    using FishNetClientAspect = Aspects.FishNetClientAspect;
 
     /// <summary>
     /// update netcode clients list
@@ -31,12 +32,11 @@
     public class UpdateNetcodeClientsSystem : IEcsInitSystem, IEcsRunSystem
     {
         private FishNetAspect _netcodeAspect;
-        private NetcodeClientAspect _clientAspect;
+        private FishNetClientAspect _clientAspect;
         private NetworkClientAspect _networkClientAspect;
         private NetcodePlayerAspect _netcodePlayerAspect;
         
         private ProtoWorld _world;
-        
         
         private NativeHashMap<ulong,ProtoPackedEntity> _clients;
         private NativeList<ulong> _removedIds;
@@ -44,7 +44,7 @@
         private ProtoItExc _newClients= It
             .Chain<NetworkClientComponent>()
             .Inc<NetcodeClientObjectComponent>()
-            .Exc<NetworkLinkComponent>()
+            .Exc<NetworkSourceLinkComponent>()
             .End();
         
         private ProtoIt _managerFilter= It
