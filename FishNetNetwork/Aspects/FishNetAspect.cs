@@ -4,6 +4,7 @@
     using Componenets.Requests;
     using Components;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
@@ -23,22 +24,22 @@
     [ECSDI]
     public class FishNetAspect : EcsAspect
     {
-        public EcsPool<NetcodeManagerComponent> Manager;
-        public EcsPool<FishNetClientManagerComponent> ClientManager;
-        public EcsPool<NetcodeSharedRPCComponent> RPCAsset;
-        public EcsPool<EcsNetworkConnectionInfoComponent> Transport;
-        public EcsPool<FishNetServerManagerComponent> ServerManager;
-        public EcsPool<LifeTimeComponent> LifeTime;
-        public EcsPool<NetworkTimeComponent> NetworkTime;
+        public ProtoPool<NetcodeManagerComponent> Manager;
+        public ProtoPool<FishNetClientManagerComponent> ClientManager;
+        public ProtoPool<NetcodeSharedRPCComponent> RPCAsset;
+        public ProtoPool<EcsNetworkConnectionInfoComponent> Transport;
+        public ProtoPool<FishNetServerManagerComponent> ServerManager;
+        public ProtoPool<LifeTimeComponent> LifeTime;
+        public ProtoPool<NetworkTimeComponent> NetworkTime;
         
-        public EcsPool<NetcodeAgentComponent> Agent;
-        public EcsPool<NetcodeStatusComponent> Status;
+        public ProtoPool<NetcodeAgentComponent> Agent;
+        public ProtoPool<NetcodeStatusComponent> Status;
 
-        public EcsPool<NetcodeMessageSenderId> SenderId;
+        public ProtoPool<NetcodeMessageSenderId> SenderId;
         
-        public EcsPool<NetworkConnectionTypeComponent> ConnectionType;
+        public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
         //requests
         //initialize netcode and create new entity if not exists
-        public EcsPool<InitializeNetcodeSelfRequest> InitializeSelf;
+        public ProtoPool<InitializeNetcodeSelfRequest> InitializeSelf;
     }
 }

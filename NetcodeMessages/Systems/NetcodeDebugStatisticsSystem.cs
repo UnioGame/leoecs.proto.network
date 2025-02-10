@@ -30,7 +30,6 @@
     public class NetcodeDebugStatisticsSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private NetworkSyncAspect _networkSyncAspect;
         private NetcodeMessageAspect _messageAspect;
         private NetworkCommandsAspect _networkMessageAspect;
         

@@ -5,6 +5,7 @@
     using Components.Events;
     using Components.Requests;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
@@ -23,37 +24,37 @@
     public class NetworkClientAspect : EcsAspect
     {
         //base network client marker
-        public EcsPool<NetworkClientComponent> Client;
+        public ProtoPool<NetworkClientComponent> Client;
         //id of client
-        public EcsPool<NetworkClientIdComponent> ClientId;
+        public ProtoPool<NetworkClientIdComponent> ClientId;
         //link to network transport
-        public EcsPool<NetworkLinkComponent> NetworkLink;
+        public ProtoPool<NetworkLinkComponent> NetworkLink;
         //connection type data
-        public EcsPool<NetworkConnectionTypeComponent> Connection;
+        public ProtoPool<NetworkConnectionTypeComponent> Connection;
         
         //=== optional ===
         //mark client as local
-        public EcsPool<NetworkLocalClientComponent> Local;
+        public ProtoPool<NetworkLocalClientComponent> Local;
         //mark client as master
-        public EcsPool<NetworkMasterClientComponent> Master;
+        public ProtoPool<NetworkMasterClientComponent> Master;
         
         //=== requests ===
         
         /// <summary>
         /// Connect to server as a client
         /// </summary>
-        public EcsPool<StartNetworkClientSelfRequest> Connect;
+        public ProtoPool<StartNetworkClientSelfRequest> Connect;
         
         //=== events ====
         
         /// <summary>
         /// send when client connected to server
         /// </summary>
-        public EcsPool<NetworkClientConnectedSelfEvent> Connected;
+        public ProtoPool<NetworkClientConnectedSelfEvent> Connected;
 
         /// <summary>
         /// send when client disconnected from server
         /// </summary>
-        public EcsPool<NetworkClientDisconnectedEvent> Disconnected;
+        public ProtoPool<NetworkClientDisconnectedEvent> Disconnected;
     }
 }

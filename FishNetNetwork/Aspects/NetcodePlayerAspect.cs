@@ -3,6 +3,7 @@
     using System;
     using Components;
     using Leopotam.EcsLite;
+    using Leopotam.EcsProto;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
@@ -17,6 +18,6 @@
     [ECSDI]
     public class NetcodePlayerAspect : EcsAspect
     {
-        public EcsPool<NetcodePlayerComponent> Player;
+        public ProtoPool<NetcodePlayerComponent> Player;
     }
 }
