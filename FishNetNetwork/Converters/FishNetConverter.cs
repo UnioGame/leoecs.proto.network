@@ -26,7 +26,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public class NetcodeConverter : GameObjectConverter
+    public class FishNetConverter : GameObjectConverter
     {
         public NetworkManager networkManager;
         
@@ -49,9 +49,8 @@
             netcodeStatusComponent.IsConnected = false;
             netcodeStatusComponent.IsInRoom = false;
             
-            //TODO NET
-            //networkTime.Time = networkManager.ServerTime.TimeAsFloat;
-            //networkTime.Tick = networkManager.ServerTime.Tick;
+            networkTime.Time = networkManager.TimeManager.ServerUptime;
+            networkTime.Tick = networkManager.TimeManager.Tick;
 
             var lifeTime = target.GetAssetLifeTime();
             syncValuesComponent.Values = 

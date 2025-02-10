@@ -5,10 +5,8 @@
     using Leopotam.EcsProto;
     using NetcodeClients.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
-    /// <summary>
-    /// ADD DESCRIPTION HERE
-    /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
 
@@ -17,6 +15,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class FishNetClientAspect : EcsAspect
     {
         public ProtoPool<NetcodeClientObjectComponent> NetcodeClientObject;

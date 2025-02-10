@@ -4,7 +4,8 @@
     using Components;
     using Leopotam.EcsLite;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
-    
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
 
@@ -13,6 +14,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class NetcodePlayerAspect : EcsAspect
     {
         public EcsPool<NetcodePlayerComponent> Player;

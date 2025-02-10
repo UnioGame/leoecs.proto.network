@@ -159,6 +159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 830696387813704948}
+  - component: {fileID: 6414591668196091183}
   - component: {fileID: 2476722489202692543}
   - component: {fileID: 7088413769595438047}
   - component: {fileID: 5464640875827972338}
@@ -187,6 +188,36 @@ Transform:
   - {fileID: 2798795557394786681}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6414591668196091183
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4523700334791155799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b31ff3bcc7e5bd34eb5b7f513e3ef6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  createEntityOnEnabled: 1
+  createEntityOnStart: 0
+  destroyEntityOnDisable: 1
+  destroyOnDestroy: 0
+  serializableConverters:
+  - rid: 7771799231579816044
+  assetConverters: []
+  components:
+    ShowComponents: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 7771799231579816044
+      type: {class: FishNetConverter, ns: Game.Ecs.Network.UnityNetcode.Converters,
+        asm: game.ecs.network.fishnet}
+      data:
+        enabled: 1
+        networkManager: {fileID: 2476722489202692543}
 --- !u!114 &2476722489202692543
 MonoBehaviour:
   m_ObjectHideFlags: 0

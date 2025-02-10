@@ -2892,6 +2892,7 @@ MonoBehaviour:
   address: {fileID: 7269392232044254788}
   port: {fileID: 5637621873176127941}
   info: {fileID: 1779215263566332075}
+  networkMessage: Hello World
 --- !u!223 &8106029777148817193
 Canvas:
   m_ObjectHideFlags: 0

@@ -1,12 +1,9 @@
-using UnityEngine;
-
 namespace Game.Modules.leoecs.proto.network.Network.Tests
 {
     using System.Text;
-    using FishNet;
-    using FishNet.Connection;
     using FishNet.Managing;
     using FishNet.Object;
+    using Sirenix.OdinInspector;
     using TMPro;
     using UnityEngine.UI;
 
@@ -24,7 +21,10 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
         public TMP_InputField port;
         public TextMeshProUGUI info;
 
+        public string networkMessage = "Hello World";
+        
         private StringBuilder _infoBuilder = new StringBuilder(512);
+        private bool _isInitialized;
         
         private void Start()
         {
@@ -63,13 +63,33 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
         {
             
         }
+
+        [Button]
+        public void SendMessageData()
+        {
+            
+        }
+
+        private void Initialize()
+        {
+            if(_isInitialized) return;
+            _isInitialized = true;
+            
+        }
         
         private void Update()
         {
+            if (manager == null)
+            {
+                manager = FindAnyObjectByType<NetworkManager>();
+                if(manager == null) return;
+            }
+            
+            Initialize();
+            
             server.interactable = !manager.IsServerStarted;
             client.interactable = !manager.IsClientStarted;
             room.interactable = manager.IsServerStarted;
-            
             
             _infoBuilder.Clear();
             

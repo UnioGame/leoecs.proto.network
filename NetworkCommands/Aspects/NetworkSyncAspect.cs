@@ -4,6 +4,7 @@
     using Components;
     using Leopotam.EcsLite;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
     /// <summary>
     /// network sync value aspect
@@ -16,6 +17,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class NetworkSyncAspect : EcsAspect
     {
         public EcsPool<NetworkSyncTimeComponent> SyncTime;

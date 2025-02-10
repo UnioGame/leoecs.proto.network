@@ -8,20 +8,37 @@
     using NetcodeMessages;
     using Shared.Components.Events;
     using Shared.Components.Requests;
+    using Sirenix.OdinInspector;
     using Systems;
     using UniGame.LeoEcs.Shared.Extensions;
+    using UnityEngine.AddressableAssets;
 
     [Serializable]
     public class FishNetFeature : EcsNetworkModuleFeature
     {
+        [InlineProperty]
+        public FishNetSettings settings = new();
+        
         public NetcodeClientsFeature clientsFeature = new();
         
         protected sealed override async UniTask OnInitializeAsync(IProtoSystems ecsSystems)
         {
+            var world = ecsSystems.GetWorld();
+
+            world.SetGlobal(settings);
+            ecsSystems.AddService(settings);
+            
+            ecsSystems.AddSystem(new EcsFishNetInitializeSystem(settings));
+            
             //additional feature for clients
             await clientsFeature.InitializeAsync(ecsSystems);
             //ecsSystems.DelHere<StartNetworkSelfRequest>();
         }
     }
 
+    [Serializable]   
+    public class FishNetSettings
+    {
+        public AssetReferenceGameObject networkPrefab;
+    }
 }

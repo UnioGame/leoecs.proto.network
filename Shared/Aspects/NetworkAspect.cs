@@ -6,6 +6,7 @@
     using Components.Requests;
     using Leopotam.EcsProto;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UnityNetcode.Componenets.Requests;
     using UnityNetcode.Components;
 
@@ -20,6 +21,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class NetworkAspect : EcsAspect
     {
         public ProtoPool<NetworkLinkComponent> NetworkLink;

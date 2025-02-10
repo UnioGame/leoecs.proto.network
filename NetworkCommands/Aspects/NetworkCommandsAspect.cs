@@ -9,6 +9,7 @@
     using Shared.Components;
     using Shared.Components.Requests;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UnityNetcode.Components;
 
     /// <summary>
@@ -22,6 +23,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class NetworkCommandsAspect : EcsAspect
     {
         public ProtoPool<NetworkMessageChannelSource> Source;

@@ -6,6 +6,7 @@
     using Components.Requests;
     using Leopotam.EcsLite;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
 
     /// <summary>
     /// network client aspect
@@ -18,6 +19,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class NetworkClientAspect : EcsAspect
     {
         //base network client marker

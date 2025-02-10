@@ -6,6 +6,7 @@
     using Leopotam.EcsLite;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
+    using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcsLite.LeoEcs.Shared.Components;
 
     /// <summary>
@@ -19,6 +20,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
+    [ECSDI]
     public class FishNetAspect : EcsAspect
     {
         public EcsPool<NetcodeManagerComponent> Manager;

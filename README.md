@@ -29,3 +29,30 @@ All non Blittable types should be marked with [MemoryPackable]
         public int Size;
     }
 ```
+
+
+# ECS Network Initialization
+
+
+- Create Network Feature
+
+```csharp
+    [CreateAssetMenu(menuName = "ECS Proto/Features/Network/Netcode Feature",fileName = "Network Feature")]
+    public class NetworkProtoFeature : BaseLeoEcsFeature
+```
+
+
+- Setup Network Settings
+
+This asset will be create automatically it Odin Inspector installed
+    
+```csharp
+[CreateAssetMenu(menuName = "ECS Proto/Features/Network/Network Settings", fileName = "Network Settings")]
+public class EcsNetworkSettingsAsset : ScriptableObject
+```
+
+- Setup Fishnet Network Manager Prefab
+
+1. Create Fishnet Network Manager Prefab
+2. Add ProtoEcsMonoConverter mono behaviour to the prefab
+3. Add FishNetConverter to ProtoEcsMonoConverter serializable converters
