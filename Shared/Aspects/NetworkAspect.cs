@@ -42,8 +42,8 @@
         public ProtoPool<InitializeNetcodeRequest> InitializeNetcode;
         
         // create new host
-        public ProtoPool<StartServerRequest> StartNetwork;
-        public ProtoPool<StopServerRequest> StopNetwork;
+        public ProtoPool<StartServerRequest> StartServer;
+        public ProtoPool<StopServerRequest> StopServer;
 
         /// <summary>
         /// server connected event

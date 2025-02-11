@@ -10,7 +10,7 @@
     using UniGame.LeoEcs.Shared.Extensions;
 
     [Serializable]
-    public class NetcodeClientsFeature : EcsFeature
+    public class FishNetClientsFeature : EcsFeature
     {
         protected sealed override UniTask OnInitializeAsync(IProtoSystems ecsSystems)
         {

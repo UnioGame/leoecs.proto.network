@@ -43,7 +43,7 @@
         /// <summary>
         /// Connect to server as a client
         /// </summary>
-        public ProtoPool<StartNetworkClientSelfRequest> Connect;
+        public ProtoPool<StartNetworkClientRequest> Connect;
         
         //=== events ====
         

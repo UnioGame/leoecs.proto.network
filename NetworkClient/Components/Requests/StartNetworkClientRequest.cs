@@ -14,10 +14,9 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct StartNetworkClientSelfRequest
+    public struct StartNetworkClientRequest
     {
         public string Address;
         public ushort Port;
-        public bool StartNetwork;
     }
 }

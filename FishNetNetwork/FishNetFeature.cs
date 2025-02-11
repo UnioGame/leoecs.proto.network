@@ -20,7 +20,7 @@
         [HideLabel]
         public FishNetSettings settings = new();
         
-        public NetcodeClientsFeature clientsFeature = new();
+        public FishNetClientsFeature clientsFeature = new();
         
         protected sealed override async UniTask OnInitializeAsync(IProtoSystems ecsSystems)
         {

@@ -1,7 +1,6 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
-    using Componenets.Requests;
     using Data;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
@@ -11,8 +10,6 @@
     using Shared.Components.Requests;
     using UniCore.Runtime.ProfilerTools;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UniGame.LeoEcs.Shared.Extensions;
-    using UnityEngine;
 
     /// <summary>
     /// initialize netcode data
@@ -33,7 +30,7 @@
         
         private ProtoWorld _world;
         
-        private ProtoIt _filter= It
+        private ProtoIt _startServerFilter= It
             .Chain<StartServerRequest>()
             .End();
         
@@ -45,6 +42,9 @@
 
         public void Run()
         {
+            var startRequestOk = _startServerFilter.First();
+            if (!startRequestOk.Ok) return;
+            
             var netcodeEntityResult = _netFilter.First();
             if (!netcodeEntityResult.Ok) return;
             
@@ -57,11 +57,8 @@
             var manager = networkSource.Value;
             if (!manager.IsServerStarted)
             {
-                var startRequestOk = _filter.First();
-                if (!startRequestOk.Ok) return;
-
                 var entity = startRequestOk.Entity;
-                ref var request = ref _networkAspect.StartNetwork.Get(entity);
+                ref var request = ref _networkAspect.StartServer.Get(entity);
 
                 var address = request.Address;
                 var port = request.Port;
@@ -94,8 +91,8 @@
             }
 
             //remove all requests
-            foreach (var startEntity in _filter)
-                _networkAspect.StartNetwork.Del(startEntity);
+            foreach (var startEntity in _startServerFilter)
+                _networkAspect.StartServer.Del(startEntity);
         }
 
         private void ClientConnected_Callback(ulong id)
