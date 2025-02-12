@@ -40,9 +40,8 @@
         
         private ProtoWorld _world;
         
-        private ProtoItExc _startFilter= It
+        private ProtoIt _startFilter= It
             .Chain<StartClientNetworkRequest>()
-            .Exc<InitializeNetcodeRequest>()
             .End();
         
         private ProtoIt _netFilter= It
@@ -98,11 +97,6 @@
                 else
                 {
                     GameLog.Log($"Successfully started client for address: {address} | port: {port}");
-
-                    var packedNetEntity = _world.PackEntity(networkEntity);
-                    ref var linkComponent = ref _clientAspect.NetworkLink.GetOrAddComponent(entity);
-                    
-                    linkComponent.Value = packedNetEntity;
                 }
             }
             

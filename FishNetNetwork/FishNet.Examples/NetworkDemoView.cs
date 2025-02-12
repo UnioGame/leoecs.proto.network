@@ -66,7 +66,11 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
         
         public void StartClient()
         {
-            manager.ClientManager.StartConnection(address.text,portValue);
+            if(_world == null) return;
+            var requestEntity = _world.NewEntity();
+            ref var startServer = ref _world.AddComponent<StartClientNetworkRequest>(requestEntity);
+            startServer.Address = addressValue;
+            startServer.Port = portValue;
         }
         
         public void CreateRoom()
