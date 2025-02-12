@@ -24,10 +24,10 @@
     [ECSDI]
     public class FishNetAspect : EcsAspect
     {
-        public ProtoPool<NetcodeManagerComponent> Manager;
+        public ProtoPool<FishNetManagerComponent> Manager;
         public ProtoPool<FishNetClientManagerComponent> ClientManager;
         public ProtoPool<NetcodeSharedRPCComponent> RPCAsset;
-        public ProtoPool<EcsNetworkConnectionInfoComponent> Transport;
+        public ProtoPool<NetworkConnectionInfoComponent> Transport;
         public ProtoPool<FishNetServerManagerComponent> ServerManager;
         public ProtoPool<LifeTimeComponent> LifeTime;
         public ProtoPool<NetworkTimeComponent> NetworkTime;

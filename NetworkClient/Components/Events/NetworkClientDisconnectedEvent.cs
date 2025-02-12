@@ -15,6 +15,6 @@
     [Serializable]
     public struct NetworkClientDisconnectedEvent
     {
-        public ulong ClientId;
+        public int ClientId;
     }
 }

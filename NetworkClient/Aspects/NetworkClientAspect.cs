@@ -6,8 +6,10 @@
     using Components.Requests;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
+    using Modules.leoecs.proto.network.Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
+    using UnityNetcode.Components;
 
     /// <summary>
     /// network client aspect
@@ -29,13 +31,17 @@
         public ProtoPool<NetworkClientIdComponent> ClientId;
         //link to network transport
         public ProtoPool<NetworkSourceLinkComponent> NetworkLink;
+        
         //connection type data
-        public ProtoPool<NetworkConnectionTypeComponent> Connection;
+        public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
+        public ProtoPool<NetworkConnectionInfoComponent> ConnectionInfo;
+        public ProtoPool<NetworkOwnerIdComponent> OwnerId;
+        
         
         //=== optional ===
         //mark client as local
-        public ProtoPool<NetworkLocalClientComponent> Local;
-        //mark client as master
+        public ProtoPool<NetworkLocalClientComponent> LocalClient;
+        //mark client as master host
         public ProtoPool<NetworkMasterClientComponent> Master;
         
         //=== requests ===
@@ -43,7 +49,7 @@
         /// <summary>
         /// Connect to server as a client
         /// </summary>
-        public ProtoPool<StartNetworkClientRequest> Connect;
+        public ProtoPool<StartClientNetworkRequest> StartClient;
         
         //=== events ====
         
@@ -56,5 +62,6 @@
         /// send when client disconnected from server
         /// </summary>
         public ProtoPool<NetworkClientDisconnectedEvent> Disconnected;
+        public ProtoPool<NetworkClientErrorSelfEvent> ClientError;
     }
 }

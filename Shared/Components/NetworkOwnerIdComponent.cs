@@ -1,10 +1,7 @@
-﻿namespace Game.Ecs.Network.Shared.Components
+﻿namespace Game.Modules.leoecs.proto.network.Shared.Components
 {
     using System;
 
-    /// <summary>
-    /// mark entity as network client
-    /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
 
@@ -13,8 +10,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct NetworkClientIdComponent
+    public struct NetworkOwnerIdComponent
     {
-        public int Id;
+        public int Value;
     }
 }

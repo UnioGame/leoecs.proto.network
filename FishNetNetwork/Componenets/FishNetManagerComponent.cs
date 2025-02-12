@@ -1,10 +1,10 @@
-﻿namespace Game.Ecs.Network.Shared.Components.Events
+﻿namespace Game.Ecs.Network.UnityNetcode.Components
 {
     using System;
-    using UnityEngine.Serialization;
+    using FishNet.Managing;
 
     /// <summary>
-    /// client connected to server
+    /// netcode Manager
     /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
@@ -14,9 +14,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct NetworkClientConnectedSelfEvent
+    public struct FishNetManagerComponent
     {
-        [FormerlySerializedAs("Id")]
-        public int ClientId;
+        public NetworkManager Value;
     }
 }

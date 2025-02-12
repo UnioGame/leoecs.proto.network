@@ -16,12 +16,13 @@
         {
             ecsSystems.DelHere<NetworkClientConnectedSelfEvent>();
             ecsSystems.DelHere<NetworkClientDisconnectedEvent>();
+            ecsSystems.DelHere<NetworkClientErrorSelfEvent>();
             
             //start client by request and connect to server
-            ecsSystems.Add(new StartNetcodeClientSystem());
+            ecsSystems.Add(new StartFishNetClientSystem());
             
             //update client info
-            ecsSystems.Add(new UpdateNetcodeClientsSystem());
+            ecsSystems.Add(new UpdateFishNetClientsSystem());
             
             //handle new client connect and ask to resend all data
             ecsSystems.Add(new HandleNewClientConnectSystem());

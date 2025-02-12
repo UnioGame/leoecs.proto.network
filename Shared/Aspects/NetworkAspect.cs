@@ -30,7 +30,7 @@
         public ProtoPool<NetcodeAgentComponent> NetworkAgent;
         
         public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
-        public ProtoPool<EcsNetworkConnectionInfoComponent> ConnectionInfo;
+        public ProtoPool<NetworkConnectionInfoComponent> ConnectionInfo;
         public ProtoPool<NetcodeMessageSenderId> SenderId;
         //netcode runtime info
         //public EcsPool<NetworkActiveComponent> Active;

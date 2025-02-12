@@ -1,7 +1,6 @@
 ﻿namespace Game.Ecs.Network.Shared.Components.Events
 {
     using System;
-    using UnityEngine.Serialization;
 
     /// <summary>
     /// client connected to server
@@ -14,9 +13,15 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct NetworkClientConnectedSelfEvent
+    public struct NetworkClientErrorSelfEvent
     {
-        [FormerlySerializedAs("Id")]
-        public int ClientId;
+        public NetworkClientErrors ErrorCode;
+        public string Message;
+    }
+    
+    public enum NetworkClientErrors
+    {
+        Other,
+        ConnectionFailed,
     }
 }

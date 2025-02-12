@@ -11,7 +11,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct EcsNetworkConnectionInfoComponent
+    public struct NetworkConnectionInfoComponent
     {
         public bool ConnectWithDefault;
         public EcsNetworkConnectionData Value;
