@@ -34,6 +34,7 @@
         protected override void OnApply(GameObject target, ProtoWorld world, ProtoEntity entity)
         {
             ref var networkTime = ref world.GetOrAddComponent<NetworkTimeComponent>(entity);
+            ref var clientManagerComponent = ref world.GetOrAddComponent<FishNetClientManagerComponent>(entity);
             ref var agentComponent = ref world.GetOrAddComponent<NetcodeAgentComponent>(entity);
             ref var networkManagerComponent = ref world.GetOrAddComponent<FishNetManagerComponent>(entity);
             ref var netcodeStatusComponent = ref world.GetOrAddComponent<NetcodeStatusComponent>(entity);
@@ -50,6 +51,8 @@
             agentComponent.Id = ecsNetworkManager.ActiveClientId;
             
             networkManagerComponent.Value = networkManager;
+            clientManagerComponent.Value = networkManager.ClientManager;
+            
             targetComponent.Value = target;
 
             netcodeStatusComponent.Status = ConnectionStatus.Disconnected;

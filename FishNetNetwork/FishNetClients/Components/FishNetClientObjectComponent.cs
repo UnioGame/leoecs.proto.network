@@ -14,7 +14,7 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct NetcodeClientObjectComponent
+    public struct FishNetClientObjectComponent
     {
         public NetworkObject Value;
     }

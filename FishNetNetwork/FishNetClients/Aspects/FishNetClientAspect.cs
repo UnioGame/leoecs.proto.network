@@ -34,8 +34,9 @@
         public NetworkClientAspect ClientAspect;
         
         //id of client
-        public EcsPool<NetworkClientIdComponent> ClientId;
-        public EcsPool<FishNetConnectionComponent> Connection;
+        public ProtoPool<NetworkClientIdComponent> ClientId;
+        public ProtoPool<FishNetConnectionComponent> Connection;
+        public ProtoPool<FishNetClientObjectComponent> ClientObject;
 
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

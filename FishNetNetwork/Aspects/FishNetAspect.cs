@@ -5,6 +5,7 @@
     using Components;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
+    using NetcodeClients.Components;
     using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
@@ -31,6 +32,7 @@
         public ProtoPool<FishNetServerManagerComponent> ServerManager;
         public ProtoPool<LifeTimeComponent> LifeTime;
         public ProtoPool<NetworkTimeComponent> NetworkTime;
+        public ProtoPool<FishNetConnectionComponent> Connection;
         
         public ProtoPool<NetcodeAgentComponent> Agent;
         public ProtoPool<NetcodeStatusComponent> Status;

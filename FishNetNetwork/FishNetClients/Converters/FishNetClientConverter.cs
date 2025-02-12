@@ -24,7 +24,7 @@
         protected override void OnApply(GameObject target, ProtoWorld world, ProtoEntity entity)
         {
             var networkObject = target.GetComponent<NetworkObject>();
-            ref var networkObjectComponent = ref world.AddComponent<NetcodeClientObjectComponent>(entity);
+            ref var networkObjectComponent = ref world.AddComponent<FishNetClientObjectComponent>(entity);
             ref var networkClientComponent = ref world.AddComponent<NetworkClientComponent>(entity);
             ref var networkConnectionTypeComponent = ref world.AddComponent<NetworkConnectionTypeComponent>(entity);
             ref var networkClientIdComponent = ref world.AddComponent<NetworkClientIdComponent>(entity);

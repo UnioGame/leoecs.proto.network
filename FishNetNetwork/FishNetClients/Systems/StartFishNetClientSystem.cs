@@ -54,11 +54,10 @@
         public void Run()
         {
             var startOk = _startFilter.First();
-            if (startOk.Ok)
+            var netcoreResult = _netFilter.First();
+            
+            if (startOk.Ok && netcoreResult.Ok)
             {
-                var netcoreResult = _netFilter.First();
-                if (!netcoreResult.Ok) return;
-
                 var networkEntity = netcoreResult.Entity;
                 ref var networkManagerComponent = ref _fishnetAspect.Manager.Get(networkEntity);
                 var networkManager = networkManagerComponent.Value;
@@ -74,14 +73,7 @@
                 
                 var address = request.Address;
                 var port = request.Port;
-            
-                ref var transportComponent = ref _fishnetAspect.Transport.Get(entity);
-
-                var connectionInfo = transportComponent.Value;
-
-                connectionInfo.Address = address;
-                connectionInfo.Port = (ushort)port;
-
+                
                 //start server
                 var clientManager = networkManager.ClientManager;
                 var result = clientManager.StartConnection(address,port);

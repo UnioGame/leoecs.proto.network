@@ -1,6 +1,7 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.NetcodeClients.Systems
 {
     using System;
+    using System.Collections.Generic;
     using Components;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
@@ -35,15 +36,8 @@
         
         private ProtoWorld _world;
         
-        private NativeHashMap<int,ProtoPackedEntity> _clients;
-        private NativeList<int> _removedIds;
-        
-        private ProtoItExc _clientsFilter= It
-            .Chain<NetworkClientComponent>()
-            .Inc<NetcodeClientObjectComponent>()
-            .Exc<NetworkSourceLinkComponent>()
-            .End();
-        
+        private Dictionary<int,ProtoPackedEntity> _clients;
+
         private ProtoIt _managerFilter= It
             .Chain<FishNetManagerComponent>()
             .End();
@@ -52,12 +46,7 @@
         {
             _world = systems.GetWorld();
             
-            var lifeTime = _world.GetWorldLifeTime();
-            
-            _clients = new NativeHashMap<int, ProtoPackedEntity>(100, Allocator.Persistent)
-                .AddTo(lifeTime);
-            
-            _removedIds = new NativeList<int>(8,Allocator.Persistent).AddTo(lifeTime);
+            _clients = new Dictionary<int, ProtoPackedEntity>();
         }
 
         public void Run()
@@ -115,8 +104,6 @@
                 
                 ownerIdComponent.Value = clientId;
                 
-                _clients[clientId] = _world.PackEntity(clientEntity);
-                
                 if (connection.IsLocalClient)
                 {
                     _networkClientAspect.LocalClient.GetOrAddComponent(clientEntity);
@@ -136,7 +123,7 @@
                 }
             }
 
-            _removedIds.Clear();
+            var removedIds = new NativeList<int>(8,Allocator.Temp);
             
             //is client disconnected
             foreach (var client in _clients)
@@ -150,10 +137,10 @@
                         continue;
                 }
                 
-                _removedIds.Add(clientId);
+                removedIds.Add(clientId);
             }
 
-            foreach (var id in _removedIds)
+            foreach (var id in removedIds)
             {
                 //fire disconnect event
                 var eventEntity = _world.NewEntity();
