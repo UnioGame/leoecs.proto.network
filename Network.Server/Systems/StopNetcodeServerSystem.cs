@@ -21,7 +21,7 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class StopNetcodeSystem : IEcsRunSystem
+    public class StopNetcodeServerSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
         

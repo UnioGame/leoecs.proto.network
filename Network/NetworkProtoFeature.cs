@@ -5,6 +5,7 @@
     using Cysharp.Threading.Tasks;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
+    using Modules.leoecs.proto.network.Network.Server;
     using NetcodeMessages;
     using NetworkCommands.Data;
     using Profiler;
@@ -91,15 +92,13 @@
 
             //link request entity ot network agent
             ecsSystems.Add(new InitializeNetcodeSystem());
-
             ecsSystems.DelHere<InitializeNetcodeRequest>();
-            //remove server connected event
-            ecsSystems.DelHere<NetworkServerConnectedSelfEvent>();
             
-            //start netcode server and fire server connected if success
-            ecsSystems.Add(new StartNetcodeServerSystem());
-            //stop netcode server
-            ecsSystems.Add(new StopNetcodeSystem());
+#if ECS_NETWORK_SERVER
+            var serverFeature = new NetworkServerFeature();
+            await serverFeature.InitializeAsync(ecsSystems);
+#endif
+            
             ecsSystems.Add(new UpdateNetcodeStatusSystem());
             ecsSystems.Add(new UpdateNetcodeTimeSystem());
             

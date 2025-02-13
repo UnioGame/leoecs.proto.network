@@ -1,6 +1,7 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
+    using Components;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -26,8 +27,12 @@
         private NetworkAspect _networkAspect;
         
         private ProtoWorld _world;
+        
         private ProtoIt _filter= It
             .Chain<NetworkSourceComponent>()
+            .Inc<NetcodeAgentComponent>()
+            .Inc<NetcodeStatusComponent>()
+            .Inc<NetworkConnectionTypeComponent>()
             .End();
 
         public void Run()
@@ -46,6 +51,7 @@
                 ref var statusComponent = ref _networkAspect.Status.Get(entity);
                 statusComponent.IsConnected = true;
                 statusComponent.Status = ConnectionStatus.Connected;
+                
                 connectionTypeComponent.IsClient = isClient;
                 connectionTypeComponent.IsServer = isServer;
                 connectionTypeComponent.IsHost = manager.IsHostStarted;

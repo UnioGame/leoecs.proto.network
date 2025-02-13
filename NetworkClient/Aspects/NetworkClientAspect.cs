@@ -36,6 +36,7 @@
         public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
         public ProtoPool<NetworkConnectionInfoComponent> ConnectionInfo;
         public ProtoPool<NetworkOwnerIdComponent> OwnerId;
+        public ProtoPool<NetworkAuthenticatedComponent> Authenticated;
         
         
         //=== optional ===

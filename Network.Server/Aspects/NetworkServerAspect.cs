@@ -1,13 +1,18 @@
-﻿namespace Game.Ecs.Network.Shared.Aspects
+﻿namespace Game.Modules.leoecs.proto.network.Network.Server.Aspects
 {
     using System;
-    using Components;
+    using Ecs.Network.Shared.Components;
+    using Ecs.Network.Shared.Components.Events;
+    using Ecs.Network.Shared.Components.Requests;
+    using Ecs.Network.UnityNetcode.Components;
     using Leopotam.EcsProto;
-    using Modules.leoecs.proto.network.Shared.Components;
+    using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
-    using UnityNetcode.Components;
 
+    /// <summary>
+    /// ADD DESCRIPTION HERE
+    /// </summary>
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
 
@@ -29,5 +34,14 @@
         
         //server time
         public ProtoPool<NetworkTimeComponent> NetworkTime;
+        
+        // create new host
+        public ProtoPool<StartServerRequest> StartServer;
+        public ProtoPool<StopServerRequest> StopServer;
+        
+        /// <summary>
+        /// server connected event
+        /// </summary>
+        public ProtoPool<NetworkServerConnectedSelfEvent> ServerConnected;
     }
 }

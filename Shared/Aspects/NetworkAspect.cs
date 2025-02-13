@@ -2,9 +2,8 @@
 {
     using System;
     using Components;
-    using Components.Events;
-    using Components.Requests;
     using Leopotam.EcsProto;
+    using Modules.leoecs.proto.network.Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Abstract;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UnityNetcode.Componenets.Requests;
@@ -32,6 +31,7 @@
         public ProtoPool<NetworkConnectionTypeComponent> ConnectionType;
         public ProtoPool<NetworkConnectionInfoComponent> ConnectionInfo;
         public ProtoPool<NetcodeMessageSenderId> SenderId;
+        public ProtoPool<NetworkAuthenticatedComponent> Authenticated;
         //netcode runtime info
         //public EcsPool<NetworkActiveComponent> Active;
         
@@ -40,14 +40,5 @@
         
         //requests
         public ProtoPool<InitializeNetcodeRequest> InitializeNetcode;
-        
-        // create new host
-        public ProtoPool<StartServerRequest> StartServer;
-        public ProtoPool<StopServerRequest> StopServer;
-
-        /// <summary>
-        /// server connected event
-        /// </summary>
-        public ProtoPool<NetworkServerConnectedSelfEvent> ServerConnected;
     }
 }

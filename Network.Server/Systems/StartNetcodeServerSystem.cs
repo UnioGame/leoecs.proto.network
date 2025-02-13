@@ -5,6 +5,7 @@
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
+    using Modules.leoecs.proto.network.Network.Server.Aspects;
     using Shared.Aspects;
     using Shared.Components;
     using Shared.Components.Requests;
@@ -58,7 +59,7 @@
             if (!manager.IsServerStarted)
             {
                 var entity = startRequestOk.Entity;
-                ref var request = ref _networkAspect.StartServer.Get(entity);
+                ref var request = ref _serverAspect.StartServer.Get(entity);
 
                 var address = request.Address;
                 var port = request.Port;
@@ -83,7 +84,7 @@
                 GameLog.LogRuntime(message);
 
                 //fire connected self event notification
-                ref var connectedEvent = ref _networkAspect.ServerConnected.Add(netcodeEntity);
+                ref var connectedEvent = ref _serverAspect.ServerConnected.Add(netcodeEntity);
             }
             else
             {
@@ -92,7 +93,7 @@
 
             //remove all requests
             foreach (var startEntity in _startServerFilter)
-                _networkAspect.StartServer.Del(startEntity);
+                _serverAspect.StartServer.Del(startEntity);
         }
 
         private void ClientConnected_Callback(ulong id)

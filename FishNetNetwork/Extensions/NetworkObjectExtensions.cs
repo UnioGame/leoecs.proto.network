@@ -1,17 +1,32 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.NetcodeMessages.Extensions
 {
+    using System;
     using System.Runtime.CompilerServices;
     using FishNet.Object;
+    using FishNet.Transporting;
     using NetworkCommands.Data;
     using UnityNetcode.Data;
 
     public static class NetworkObjectExtensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static RpcParams GetRpcTarget(this NetworkBehaviour target,
-            NetworkMessageTarget messageTarget, ulong id = default)
+        public static Channel GetChannel(this NetworkChannel networkChannel)
         {
-            var rpcTarget = new RpcParams
+            switch (networkChannel)
+            {
+                case NetworkChannel.Reliable:
+                    return Channel.Reliable;
+                case NetworkChannel.Unreliable:
+                    return Channel.Unreliable;
+                default:
+                    return Channel.Reliable;
+            }
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static NetworkMessageParams GetRpcTarget(this NetworkBehaviour target,
+            NetworkMessageTarget messageTarget, int id = default)
+        {
+            var rpcTarget = new NetworkMessageParams
             {
                 Target = messageTarget,
                 SenderId = id,

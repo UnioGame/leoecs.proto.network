@@ -12,4 +12,11 @@
         NotMe,
         Specified,
     }
+
+    [Serializable]
+    public enum NetworkChannel
+    {
+        Reliable,
+        Unreliable,
+    }
 }

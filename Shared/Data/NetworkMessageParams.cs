@@ -4,9 +4,11 @@
     using NetworkCommands.Data;
 
     [Serializable]
-    public struct RpcParams
+    public struct NetworkMessageParams
     {
         public NetworkMessageTarget Target; 
-        public ulong SenderId;
+        public NetworkChannel Channel;
+        public int SenderId;
+        public int[] Targets;
     }
 }

@@ -1,6 +1,9 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode
 {
-    public interface IEcsNetworkManager
+    using System;
+    using Data;
+
+    public interface IEcsNetworkManager : INetworkMessageChannel, IDisposable
     {
         public bool IsInitialized { get; }
         public bool IsServerStarted { get; }
@@ -16,5 +19,12 @@
         
         public bool StartServer(uint port);
         public bool StopServer(bool notifyClients);
+    }
+
+
+    public interface INetworkMessageChannel
+    {
+        void SendToClientsMessage(byte[] data,int size, NetworkMessageParams rpcParams);
+        void SendMessage(byte[] data,int size, NetworkMessageParams rpcParams);
     }
 }

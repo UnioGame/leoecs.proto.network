@@ -13,7 +13,7 @@
     {
         
         [TargetRpc(ExcludeServer = false)]
-        public void SendMessageRPC(NetworkConnection connection,byte[] data,RpcParams rpcParams)
+        public void SendMessageRPC(NetworkConnection connection,byte[] data,NetworkMessageParams rpcParams)
         {
             //TODO add defines check to send from client to client
             var result = MemoryPackSerializer.Deserialize<string>(data);
@@ -21,7 +21,7 @@
         }
         
         [TargetRpc(ExcludeServer = true)]
-        public void SendToClientRPC(NetworkConnection connection,byte[] data,int size,RpcParams rpcParams)
+        public void SendToClientRPC(NetworkConnection connection,byte[] data,int size,NetworkMessageParams rpcParams)
         {
             var world = LeoEcsGlobalData.World;
             var entity = world.NewEntity();

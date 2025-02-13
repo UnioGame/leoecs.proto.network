@@ -31,7 +31,7 @@
         {
             await networkCommandsFeature.InitializeAsync(ecsSystems);
             
-            ecsSystems.Add(new InitializeNetcodeMessagingSystem(networkObject));
+            //ecsSystems.Add(new InitializeNetcodeMessagingSystem(networkObject));
             ecsSystems.Add(new SendChannelMessageRPCSystem());
             
             //validate network events and add it to serialization queue

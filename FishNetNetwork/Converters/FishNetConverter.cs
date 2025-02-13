@@ -45,7 +45,7 @@
             ref var syncValuesComponent = ref world.GetOrAddComponent<NetworkSyncValuesComponent>(entity);
             ref var lifeTimeComponent = ref world.GetOrAddComponent<LifeTimeComponent>(entity);
             
-            var ecsNetworkManager = new FishNetNetworkManager(networkManager);
+            var ecsNetworkManager = new FishNetNetworkManager(networkManager,world);
             networkSourceComponent.Value = ecsNetworkManager;
 
             agentComponent.Id = ecsNetworkManager.ActiveClientId;
