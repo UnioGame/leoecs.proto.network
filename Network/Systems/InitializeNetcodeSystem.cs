@@ -9,10 +9,8 @@
     using Leopotam.EcsProto.QoL;
     using Shared.Aspects;
     using Shared.Components;
-    using UniGame.AddressableTools.Runtime;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
-    using Object = UnityEngine.Object;
 
     /// <summary>
     /// initialize netcode data
@@ -34,7 +32,7 @@
         private ProtoWorld _world;
         private IProtoSystems _systems;
         
-        private ProtoIt _filter= It
+        private ProtoIt _requestFilter= It
             .Chain<InitializeNetcodeRequest>()
             .End();
         
@@ -56,6 +54,13 @@
         public void Run()
         {
             var isExists = _netFilter.First();
+            
+            if(!isExists.Ok) return;
+
+            foreach (var entity in _requestFilter)
+            {
+                _networkAspect.InitializeNetcode.Del(entity);
+            }
         }
 
     }

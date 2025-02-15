@@ -3,8 +3,6 @@
     using System;
     using Components;
     using Cysharp.Threading.Tasks;
-    using FishNet.Object;
-    using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
     using NetworkCommands;
@@ -20,8 +18,6 @@
     {
         
 #region inspector
-
-        public NetworkObject networkObject;
 
         public NetworkCommandsFeature networkCommandsFeature = new();
         

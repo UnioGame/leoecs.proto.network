@@ -4,7 +4,6 @@
     using System.Buffers;
     using Aspects;
     using Components;
-    using Extensions;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
@@ -86,10 +85,10 @@
                 .Slice(0,size)
                 .CopyTo(targetArray);
             
-            var target = channelObject.GetRpcTarget(targetComponent.Value, targetComponent.Id);
-            var connection = channelObject.ClientManager.Connection;
-            
-            channelObject.SendToClientRPC(connection,targetArray,size,target);
+            //TODO FIX MESSAGE SENDING
+            //var target = channelObject.GetRpcTarget(targetComponent.Value, targetComponent.Id);
+            //var connection = channelObject.ClientManager.Connection;
+            //channelObject.SendToClientRPC(connection,targetArray,size,target);
             
             ArrayPool<byte>.Shared.Return(targetArray);
             

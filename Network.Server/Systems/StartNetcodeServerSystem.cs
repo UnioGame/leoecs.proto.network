@@ -79,7 +79,13 @@
 
                 _serverAspect.Active.Add(netcodeEntity);
 
-                var mode = request.AllowHostMode ? "host mode" : "server mode";
+                var hostMode = false;
+                
+#if ECS_NETWORK_CLIENT && ECS_NETWORK_SERVER
+                hostMode = true;
+#endif
+                
+                var mode = hostMode ? "host mode" : "server mode";
                 var message = string.Format(EcsNetworkMessages.SuccessStartedServer, mode, address, port);
                 GameLog.LogRuntime(message);
 

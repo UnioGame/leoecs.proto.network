@@ -65,9 +65,11 @@
             if(!historyEntityOk.Ok) return;
 
             var targetEntity = netcodeEntityOk.Entity;
+            var historyEntity = historyEntityOk.Entity;
             ref var connectionType = ref _networkAspect.ConnectionType.Get(targetEntity);
-            ref var historyComponent = ref _messageAspect.History.Get(targetEntity);
             ref var timeComponent = ref _networkAspect.NetworkTime.Get(targetEntity);
+            
+            ref var historyComponent = ref _messageAspect.History.Get(historyEntity);
             
             var time = timeComponent.Time;
             var tick = timeComponent.Tick;

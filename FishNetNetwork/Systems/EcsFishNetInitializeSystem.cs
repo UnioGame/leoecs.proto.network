@@ -1,8 +1,13 @@
 ﻿namespace Game.Ecs.Network.UnityNetcode.Systems
 {
     using System;
+    using Componenets.Requests;
+    using Components;
     using Cysharp.Threading.Tasks;
     using Leopotam.EcsProto;
+    using Leopotam.EcsProto.QoL;
+    using Shared.Aspects;
+    using Shared.Components;
     using UniGame.AddressableTools.Runtime;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
@@ -20,26 +25,39 @@
 #endif
     [Serializable]
     [ECSDI]
-    public class EcsFishNetInitializeSystem : IProtoInitSystem
+    public class EcsFishNetInitializeSystem : IProtoRunSystem
     {
         private FishNetSettings _settings;
+        private NetworkAspect _networkFeature;
         private ProtoWorld _world;
         
-        public EcsFishNetInitializeSystem(FishNetSettings settings)
-        {
-            _settings = settings;
-        }
-
-        public void Init(IProtoSystems systems)
-        {
-            InitializeFishNet().Forget();
-        }
+        private ProtoIt _filter = It
+            .Chain<InitializeNetcodeRequest>()
+            .End();
+        
+        private ProtoIt _networkFilter = It
+            .Chain<FishNetManagerComponent>()
+            .End();
 
         private async UniTask InitializeFishNet()
         {
             var lifeTime = _world.GetWorldLifeTime();
-            var networkPrefab = await _settings.networkPrefab.LoadAssetInstanceTaskAsync(lifeTime, true);
+            var networkPrefab = await _settings.networkPrefab
+                .LoadAssetInstanceTaskAsync(lifeTime, true);
             networkPrefab.SetActive(true);
+        }
+
+        public void Run()
+        {
+            foreach (var entity in _filter)
+            {
+                var networkEntityOk = _networkFilter.First();
+                if (networkEntityOk.Ok) return;
+                
+                InitializeFishNet().Forget();
+
+                return;
+            }
         }
     }
 

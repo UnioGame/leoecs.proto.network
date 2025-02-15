@@ -16,6 +16,6 @@
     [Serializable]
     public struct NetcodeMessageChannelComponent
     {
-        public NetcodeRPCChannelObject Value;
+        public INetworkMessageChannel Value;
     }
 }

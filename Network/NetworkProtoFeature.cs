@@ -92,7 +92,7 @@
 
             //link request entity ot network agent
             ecsSystems.Add(new InitializeNetcodeSystem());
-            ecsSystems.DelHere<InitializeNetcodeRequest>();
+            
             
 #if ECS_NETWORK_SERVER
             var serverFeature = new NetworkServerFeature();
@@ -114,6 +114,7 @@
             
             //remove stop request
             ecsSystems.DelHere<StopServerRequest>();
+            ecsSystems.DelHere<InitializeNetcodeRequest>();
         }
 
 #if UNITY_EDITOR

@@ -8,6 +8,7 @@
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UnityNetcode.Componenets.Requests;
     using UnityNetcode.Components;
+    using UnityNetcode.NetcodeMessages.Components;
 
     /// <summary>
     /// shared network aspect
@@ -32,6 +33,8 @@
         public ProtoPool<NetworkConnectionInfoComponent> ConnectionInfo;
         public ProtoPool<NetcodeMessageSenderId> SenderId;
         public ProtoPool<NetworkAuthenticatedComponent> Authenticated;
+        public ProtoPool<NetcodeMessageChannelComponent> MessageChannel;
+        
         //netcode runtime info
         //public EcsPool<NetworkActiveComponent> Active;
         

@@ -4,6 +4,7 @@
     using NetworkCommands.Data;
     using Sirenix.OdinInspector;
     using UnityEngine;
+    using UnityEngine.Serialization;
 
     [Serializable]
     public class EcsNetworkSettings
@@ -23,7 +24,7 @@
         [TitleGroup(ServerSettings)]
         public int networkTickRate = 20;
         [TitleGroup(ServerSettings)]
-        public bool AutoStartServer;
+        public bool autoStartServer = true;
         
         [TitleGroup(CommonSettings)]
         [Range(1,50)]

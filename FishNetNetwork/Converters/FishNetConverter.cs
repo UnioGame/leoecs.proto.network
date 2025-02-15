@@ -6,6 +6,7 @@
     using FishNet.Managing;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
+    using NetcodeMessages.Components;
     using NetworkCommands.Components;
     using NetworkCommands.Data;
     using Shared.Components;
@@ -44,9 +45,11 @@
             ref var connectionTypeComponent = ref world.GetOrAddComponent<NetworkConnectionTypeComponent>(entity);
             ref var syncValuesComponent = ref world.GetOrAddComponent<NetworkSyncValuesComponent>(entity);
             ref var lifeTimeComponent = ref world.GetOrAddComponent<LifeTimeComponent>(entity);
+            ref var messageChannelComponent = ref world.GetOrAddComponent<NetcodeMessageChannelComponent>(entity);
             
             var ecsNetworkManager = new FishNetNetworkManager(networkManager,world);
             networkSourceComponent.Value = ecsNetworkManager;
+            messageChannelComponent.Value = ecsNetworkManager;
 
             agentComponent.Id = ecsNetworkManager.ActiveClientId;
             

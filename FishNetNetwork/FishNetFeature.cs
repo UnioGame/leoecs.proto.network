@@ -29,7 +29,7 @@
             world.SetGlobal(settings);
             ecsSystems.AddService(settings);
             
-            ecsSystems.AddSystem(new EcsFishNetInitializeSystem(settings));
+            ecsSystems.AddSystem(new EcsFishNetInitializeSystem());
             
             //additional feature for clients
             await clientsFeature.InitializeAsync(ecsSystems);

@@ -1,11 +1,7 @@
-﻿namespace Game.Ecs.Network.Shared.Components.Requests
+﻿namespace Game.Modules.leoecs.proto.network.Network.Server.Components.Requests
 {
     using System;
-    using UnityEngine.Serialization;
-
-    /// <summary>
-    /// connect to network as host
-    /// </summary>
+    
 #if ENABLE_IL2CPP
     using Unity.IL2CPP.CompilerServices;
 
@@ -14,9 +10,8 @@
     [Il2CppSetOption(Option.DivideByZeroChecks, false)]
 #endif
     [Serializable]
-    public struct StartServerRequest
+    public struct InitializeServerRequest
     {
-        public string Address;
-        public ushort Port;
+        
     }
 }

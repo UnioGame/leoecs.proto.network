@@ -3,13 +3,14 @@
     using System;
     using Aspects;
     using Components;
-    using Extensions;
+    using Data;
     using Leopotam.EcsLite;
     using Leopotam.EcsProto;
     using Leopotam.EcsProto.QoL;
     using NetworkCommands.Aspects;
     using NetworkCommands.Components.Requests;
     using Shared.Aspects;
+    using Shared.Components;
     using UniGame.LeoEcs.Bootstrap.Runtime.Attributes;
     using UniGame.LeoEcs.Shared.Extensions;
     using UnityNetcode.Components;
@@ -29,17 +30,15 @@
     public class SendChannelMessageRPCSystem : IEcsRunSystem
     {
         private NetworkAspect _networkAspect;
-        private NetcodeMessageAspect _rpcAspect;
-        private NetworkCommandsAspect _messageAspect;
+        private NetcodeMessageAspect _messageAspect;
+        private NetworkCommandsAspect _commandsAspect;
         
         private ProtoWorld _world;
         
-        private ProtoIt _filter= It
-            .Chain<NetcodeMessageChannelComponent>()
-            .End();
-        
         private ProtoIt _managerFilter = It
             .Chain<NetcodeStatusComponent>()
+            .Inc<NetworkSourceComponent>()
+            .Inc<NetcodeMessageChannelComponent>()
             .End();
         
         private ProtoIt _requestFilter= It
@@ -50,7 +49,7 @@
         {
             foreach (var requestEntity in _requestFilter)
             {
-                ref var request = ref _messageAspect.SendMessage.Get(requestEntity);
+                ref var request = ref _commandsAspect.SendMessage.Get(requestEntity);
                 var channelEntity = _managerFilter.First();
                 
                 if(!channelEntity.Ok ) continue;
@@ -58,15 +57,14 @@
                 ref var status = ref _networkAspect.Status.Get(channelEntity.Entity);
                 if(!status.IsConnected) continue;
                 
-                ref var channel = ref _rpcAspect.Channel.Get(channelEntity.Entity);
+                ref var channel = ref _messageAspect.Channel.Get(channelEntity.Entity);
                 
                 var channelObject = channel.Value;
-                var connection = channelObject.ClientManager.Connection;
-                var target = channelObject.GetRpcTarget(request.Target);
+
+                //TODO make real message parameters
+                channelObject.SendMessage(request.Data, request.Data.Length, new NetworkMessageParams());
                 
-                channelObject.SendMessageRPC(connection,request.Data,target);
-                
-                _messageAspect.SendMessage.Del(requestEntity);
+                _commandsAspect.SendMessage.Del(requestEntity);
             }
         }
     }

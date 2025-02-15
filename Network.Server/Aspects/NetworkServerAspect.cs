@@ -1,6 +1,7 @@
 ﻿namespace Game.Modules.leoecs.proto.network.Network.Server.Aspects
 {
     using System;
+    using Components.Requests;
     using Ecs.Network.Shared.Components;
     using Ecs.Network.Shared.Components.Events;
     using Ecs.Network.Shared.Components.Requests;
@@ -24,6 +25,7 @@
     [ECSDI]
     public class NetworkServerAspect : EcsAspect
     {
+        
         public ProtoPool<NetworkServerActiveComponent> Active;
         public ProtoPool<NetworkSourceComponent> NetworkSource;
         public ProtoPool<NetworkAddressComponent> Address;
@@ -35,6 +37,8 @@
         //server time
         public ProtoPool<NetworkTimeComponent> NetworkTime;
         
+        //requests
+        public ProtoPool<InitializeServerRequest> Initialize;
         // create new host
         public ProtoPool<StartServerRequest> StartServer;
         public ProtoPool<StopServerRequest> StopServer;

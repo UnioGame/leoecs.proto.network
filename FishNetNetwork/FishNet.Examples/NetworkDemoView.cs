@@ -61,7 +61,6 @@ namespace Game.Modules.leoecs.proto.network.Network.Tests
             ref var startServer = ref _world.AddComponent<StartServerRequest>(requestEntity);
             startServer.Address = addressValue;
             startServer.Port = portValue;
-            startServer.AllowHostMode = enableHost.isOn;
         }
         
         public void StartClient()

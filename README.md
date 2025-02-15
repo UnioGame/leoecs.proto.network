@@ -58,6 +58,16 @@ public class EcsNetworkSettingsAsset : ScriptableObject
 3. Add FishNetConverter to ProtoEcsMonoConverter serializable converters
 
 
+## Defines
+
+```csharp
+     #if ECS_NETWORK - activate ecs network feature
+     #if ECS_NETWORK_SERVER - activate ecs network server feature
+     #if ECS_NETWORK_CLIENT - activate ecs network client feature
+
+     #if FISHNET - activate fishnet network transport
+```
+
 # Create Custom Network Providers
 
 

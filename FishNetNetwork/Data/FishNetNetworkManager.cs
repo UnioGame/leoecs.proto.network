@@ -5,7 +5,6 @@
     using FishNet.Transporting;
     using Leopotam.EcsProto;
     using NetworkCommands.Components;
-    using UniGame.LeoEcs.Converter.Runtime;
     using UniGame.LeoEcs.Shared.Extensions;
 
     public class FishNetNetworkManager : IEcsNetworkManager

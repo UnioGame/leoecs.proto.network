@@ -1,6 +1,7 @@
 ﻿namespace Game.Modules.leoecs.proto.network.Network.Server
 {
     using System;
+    using Components.Requests;
     using Cysharp.Threading.Tasks;
     using Ecs.Network.Shared.Components.Events;
     using Ecs.Network.UnityNetcode.Systems;
@@ -22,11 +23,14 @@
         {
             //remove server connected event
             ecsSystems.DelHere<NetworkServerConnectedSelfEvent>();
-            
+
+            ecsSystems.AddSystem(new InitializeServerSystem());
             //start netcode server and fire server connected if success
             ecsSystems.AddSystem(new StartNetcodeServerSystem());
             //stop netcode server
             ecsSystems.AddSystem(new StopNetcodeServerSystem());
+
+            ecsSystems.DelHere<InitializeServerRequest>();
             
             return UniTask.CompletedTask;
         }
